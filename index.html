@@ -38,6 +38,9 @@ html,body{margin:0;height:100%;background:#1e1e1e;color:#fff;font-family:'Segoe 
 #launcher #lPlay:hover{background:#4a9e31}#launcher #lPlay:active{box-shadow:inset 0 3px 0 #27561a}
 @media (max-width:720px){#launcher .lside{display:none}#launcher .lbar{gap:10px;flex-wrap:wrap}#launcher #lPlay{min-width:180px;font-size:19px}#launcher .lver,#launcher .luser{min-width:0}}
 #launcher .lnews .help{max-width:860px}
+#launcher .lbrand{flex-direction:column;align-items:flex-start;gap:4px}#launcher .lbrand img{width:100%;height:auto;filter:drop-shadow(0 3px 0 rgba(0,0,0,.35))}
+#launcher .lbrand small{margin-left:0;letter-spacing:4px;font-weight:700;color:#6fbf4a}
+#launcher .lsub{position:absolute;left:0;right:0;top:calc(22% + min(10vw,96px));text-align:center;font:700 clamp(16px,2.2vw,24px) 'Segoe UI','Malgun Gothic',sans-serif;color:#fff6d0;text-shadow:2px 2px 0 #7a4b12,4px 4px 0 rgba(0,0,0,.25);letter-spacing:2px}
 .lpick{width:min(520px,92%)}.lpick .lsearch{font:inherit;font-size:14px;width:100%;box-sizing:border-box;padding:8px 10px;background:#2a2a2a;color:#fff;border:1px solid #555;border-radius:3px;outline:none;margin-bottom:6px}
 .lpick .llist{max-height:min(52vh,420px);overflow-y:auto;display:grid;grid-template-columns:1fr 1fr;gap:5px}
 .lpick .llist button{font:inherit;text-align:left;padding:7px 10px;background:#333;color:#fff;border:1px solid #444;border-radius:3px;cursor:pointer;display:flex;flex-direction:column;line-height:1.3}
@@ -45,7 +48,7 @@ html,body{margin:0;height:100%;background:#1e1e1e;color:#fff;font-family:'Segoe 
 </style></head><body>
 <div id="launcher">
   <div class="lside">
-    <div class="lbrand"><span class="lcube"></span>CAVEBUILD<small>Launcher</small></div>
+    <div class="lbrand"><img id="lBrandLogo" alt="CAVEBUILD"><small>LAUNCHER</small></div>
     <div class="lnav on" data-tab="play">🎮 CAVEBUILD</div>
     <div class="lnav" data-tab="news"><span data-t="📰 Patch Notes">📰 Patch Notes</span></div>
     <div class="lnav" data-tab="set"><span data-t="⚙ Settings">⚙ Settings</span></div>
@@ -53,7 +56,7 @@ html,body{margin:0;height:100%;background:#1e1e1e;color:#fff;font-family:'Segoe 
   </div>
   <div class="lmain">
     <div class="ltabs"><span class="on" data-tab="play" data-t="PLAY">PLAY</span><span data-tab="news" data-t="PATCH NOTES">PATCH NOTES</span><span data-tab="set" data-t="SETTINGS">SETTINGS</span></div>
-    <div class="lpane lplay show"><div class="lhero"><div class="lsun"></div><div class="lcloud c1"></div><div class="lcloud c2"></div><div class="lcloud c3"></div><img id="lLogo" alt="CAVEBUILD"><div class="lground"></div></div></div>
+    <div class="lpane lplay show"><div class="lhero"><div class="lsun"></div><div class="lcloud c1"></div><div class="lcloud c2"></div><div class="lcloud c3"></div><img id="lLogo" alt="CAVEBUILD"><div class="lsub" id="lSub">Mine, build and survive</div><div class="lground"></div></div></div>
     <div class="lpane lnews"><div id="lNews" class="help upd"></div></div>
     <div class="lpane lset"><h3 data-t="🌐 Language">🌐 Language</h3><div id="lLang" class="lpick"></div></div>
     <div class="lbar"><div class="lver"><small data-t="Version">Version</small><select id="lVer"></select></div><button id="lPlay" data-t="PLAY">PLAY</button><div class="luser"><small data-t="Player">Player</small><b id="lUser">Player</b></div></div>
@@ -114,11 +117,24 @@ function makeLogo(S=28,D=10){
   return f;
 }
 
+function makeLauncherIcon(S=64){ // 런처 아이콘: 어두운 둥근 판 · 입체 잔디 블록 · 초록 ▶ 플레이 표시
+  const c=makeCanvas(S,S),g=c.getContext('2d'),k=S/64;
+  const rr=(x,y,w,h,r)=>{g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath();};
+  g.fillStyle='#141414';rr(0,0,S,S,13*k);g.fill();g.fillStyle='#262626';rr(2*k,2*k,S-4*k,S-4*k,11*k);g.fill();
+  const cx=29*k,top=10*k,w=20*k,h=11*k,d=22*k; // 입체 블록: 윗면(잔디) · 왼쪽 · 오른쪽(흙)
+  const poly=(pts,col)=>{g.fillStyle=col;g.beginPath();g.moveTo(pts[0][0],pts[0][1]);for(const p of pts.slice(1))g.lineTo(p[0],p[1]);g.closePath();g.fill();};
+  poly([[cx,top],[cx+w,top+h],[cx,top+2*h],[cx-w,top+h]],'#6ab43a');
+  poly([[cx-w,top+h],[cx,top+2*h],[cx,top+2*h+d],[cx-w,top+h+d]],'#8a5a32');
+  poly([[cx+w,top+h],[cx,top+2*h],[cx,top+2*h+d],[cx+w,top+h+d]],'#6e4626');
+  poly([[cx-w,top+h],[cx,top+2*h],[cx,top+2*h+5*k],[cx-w,top+h+5*k]],'#4f9a2c');poly([[cx+w,top+h],[cx,top+2*h],[cx,top+2*h+5*k],[cx+w,top+h+5*k]],'#3f7f24');
+  for(let i=0;i<14;i++){const x=cx-w+3*k+h2(i,1,51)*(2*w-6*k),y=top+h+7*k+h2(1,i,52)*(d-8*k);g.fillStyle='rgba(0,0,0,.18)';g.fillRect(x,y,2*k,2*k);}
+  g.fillStyle='#3c8527';g.beginPath();g.arc(47*k,47*k,13*k,0,6.3);g.fill();g.fillStyle='#4a9e31';g.beginPath();g.arc(47*k,46*k,11*k,0,6.3);g.fill();
+  g.fillStyle='#fff';g.beginPath();g.moveTo(43*k,40*k);g.lineTo(53*k,46*k);g.lineTo(43*k,52*k);g.closePath();g.fill();return c;}
 const LANGS=[["en","English","English"],["zh","中文（普通话）","Mandarin Chinese"],["hi","हिन्दी","Hindi"],["es","Español","Spanish"],["ar","العربية","Arabic"],["fr","Français","French"],["bn","বাংলা","Bengali"],["pt","Português","Portuguese"],["id","Bahasa Indonesia","Indonesian"],["ur","اردو","Urdu"],["ru","Русский","Russian"],["de","Deutsch","German"],["ja","日本語","Japanese"],["pcm","Naijá","Nigerian Pidgin"],["arz","مصري","Egyptian Arabic"],["mr","मराठी","Marathi"],["vi","Tiếng Việt","Vietnamese"],["te","తెలుగు","Telugu"],["sw","Kiswahili","Swahili"],["ha","Hausa","Hausa"],["tr","Türkçe","Turkish"],["pnb","پنجابی","Western Punjabi"],["fil","Filipino","Filipino / Tagalog"],["ta","தமிழ்","Tamil"],["yue","粵語","Cantonese"],["wuu","吴语（上海话）","Wu / Shanghainese"],["fa","فارسی","Persian"],["ko","한국어","Korean"],["am","አማርኛ","Amharic"],["th","ไทย","Thai"],["jv","Basa Jawa","Javanese"],["it","Italiano","Italian"],["gu","ગુજરાતી","Gujarati"],["kn","ಕನ್ನಡ","Kannada"],["apc","شامي","Levantine Arabic"],["apd","سوداني","Sudanese Arabic"],["yo","Yorùbá","Yoruba"],["bho","भोजपुरी","Bhojpuri"],["pl","Polski","Polish"],["ml","മലയാളം","Malayalam"],["uk","Українська","Ukrainian"],["or","ଓଡ଼ିଆ","Odia"],["nan","閩南語","Min Nan / Hokkien"],["my","မြန်မာ","Burmese"],["az","Azərbaycanca","Azerbaijani"],["hak","客家話","Hakka"],["hsn","湘语","Xiang"],["pa","ਪੰਜਾਬੀ","Eastern Punjabi"],["su","Basa Sunda","Sundanese"],["ro","Română","Romanian"]];
 const LANG_KEY='cavebuild-lang';let LANG='en';try{const s=localStorage.getItem(LANG_KEY);if(LANGS.some(l=>l[0]===s))LANG=s;}catch(e){}
 const KO={'PLAY':'플레이','PATCH NOTES':'패치 노트','SETTINGS':'설정','📰 Patch Notes':'📰 패치 노트','⚙ Settings':'⚙ 설정','Version':'버전','Player':'플레이어','Latest release':'최신 버전','🌐 Language':'🌐 언어','Search languages…':'언어 검색…','No matching language':'맞는 언어가 없어요'};
 let LD={};const LT=en=>LANG==='ko'?(KO[en]||en):(LD['L:'+en]||en);
-function applyText(){document.documentElement.lang=LANG;for(const e of document.querySelectorAll('[data-t]'))e.textContent=LT(e.dataset.t);renderVers();langPicker($('lLang'));}
+function applyText(){document.documentElement.lang=LANG;$('lSub').textContent=LANG==='ko'?'캐고, 짓고, 살아남으세요':(LD['캐고, 짓고, 살아남으세요']||'Mine, build and survive');for(const e of document.querySelectorAll('[data-t]'))e.textContent=LT(e.dataset.t);renderVers();langPicker($('lLang'));}
 let NOTES_KO='',NOTES_EN='',VERS=[];
 function renderNotes(){$('lNews').innerHTML=(LANG==='ko'?NOTES_KO:NOTES_EN)||NOTES_EN||NOTES_KO||'';}
 function renderVers(){$('lVer').innerHTML=VERS.map((v,i)=>`<option>${i?v:LT('Latest release')+' '+v}</option>`).join('');}
@@ -139,7 +155,8 @@ fetch(GAME_URL,{cache:'no-cache'}).then(r=>r.text()).then(t=>{
   renderVers();renderNotes();}).catch(()=>{});
 {const L=$('launcher'),show=t=>{for(const e of L.querySelectorAll('[data-tab]'))e.classList.toggle('on',e.dataset.tab===t);for(const [c,k] of [['lplay','play'],['lnews','news'],['lset','set']])L.querySelector('.'+c).classList.toggle('show',k===t);};
   for(const e of L.querySelectorAll('[data-tab]'))e.onclick=()=>show(e.dataset.tab);
-  try{$('lLogo').src=makeLogo().toDataURL();}catch(e){}
+  try{const lg=makeLogo().toDataURL();$('lLogo').src=lg;$('lBrandLogo').src=lg;}catch(e){}
+  try{const l=document.createElement('link');l.rel='icon';l.type='image/png';l.href=makeLauncherIcon(64).toDataURL();document.head.appendChild(l);}catch(e){}
   try{$('lUser').textContent=localStorage.getItem('cavebuild-user')||'Player';}catch(e){}
   $('lPlay').onclick=()=>{location.href=GAME_URL+'?play=1';};}
 loadLang();
