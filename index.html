@@ -137,7 +137,7 @@ let LD={};const LT=en=>LANG==='ko'?(KO[en]||en):(LD['L:'+en]||en);
 function applyText(){document.documentElement.lang=LANG;$('lSub').textContent=LANG==='ko'?'캐고, 짓고, 살아남으세요':(LD['캐고, 짓고, 살아남으세요']||'Mine, build and survive');for(const e of document.querySelectorAll('[data-t]'))e.textContent=LT(e.dataset.t);renderVers();langPicker($('lLang'));}
 let NOTES_KO='',NOTES_EN='',VERS=[];
 function renderNotes(){$('lNews').innerHTML=(LANG==='ko'?NOTES_KO:NOTES_EN)||NOTES_EN||NOTES_KO||'';}
-function renderVers(){const cur=$('lVer').value;$('lVer').innerHTML=VERS.map((v,i)=>`<option value="${i?v:''}">${i?v:LT('Latest release')+' '+v}</option>`).join('');if(cur&&VERS.includes(cur))$('lVer').value=cur;}
+function renderVers(){const cur=$('lVer').value;$('lVer').innerHTML=VERS.slice(0,1).map((v,i)=>`<option value="${i?v:''}">${i?v:LT('Latest release')+' '+v}</option>`).join('');if(cur&&VERS.includes(cur))$('lVer').value=cur;}
 function langPicker(el){
   el.innerHTML=`<input class="lsearch" type="text" placeholder="🔍 ${LT('Search languages…')}" autocomplete="off"><div class="llist"></div>`;
   const inp=el.querySelector('input'),list=el.querySelector('.llist');
@@ -158,8 +158,7 @@ fetch(GAME_URL,{cache:'no-cache'}).then(r=>r.text()).then(t=>{
   try{const lg=makeLogo().toDataURL();$('lLogo').src=lg;$('lBrandLogo').src=lg;}catch(e){}
   try{const l=document.createElement('link');l.rel='icon';l.type='image/png';l.href=makeLauncherIcon(64).toDataURL();document.head.appendChild(l);}catch(e){}
   try{$('lUser').textContent=localStorage.getItem('cavebuild-user')||'Player';}catch(e){}
-  $('lPlay').onclick=()=>{const v=$('lVer').value;if(!v){location.href=GAME_URL+'?play=1';return;}
-    prepOld().then(()=>{location.href=GAME_URL+'versions/'+v+'/?play=1';});};}
+  $('lPlay').onclick=()=>{location.href=GAME_URL+'?play=1';};}
 // 옛 버전: 가장 최근에 한 세계를 옛 저장 칸('main')에 복사해서 그 세계로 들어가게 함 + 'cb-oldplay' 표시 → 최신 버전으로 돌아오면 옛 버전에서 한 것을 그 세계에 합치고 숨겼던 아이템도 되돌림
 function u16ToB64(a){const u=new Uint8Array(a.buffer,a.byteOffset,a.byteLength);let t='';for(let i=0;i<u.length;i+=8192)t+=String.fromCharCode.apply(null,u.subarray(i,i+8192));return btoa(t);}
 function toPortable(sv){const md={};for(const d in sv.md||{}){md[d]={};for(const k in sv.md[d]){const v=sv.md[d][k];md[d][k]=v instanceof Uint16Array?u16ToB64(v):v;}}return Object.assign({},sv,{md});}
