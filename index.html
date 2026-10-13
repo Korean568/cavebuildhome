@@ -82,8 +82,8 @@ const LOGO_G={
   D:['####.','#...#','#...#','#...#','#...#','#...#','####.'],
 };
 
-function makeLogo(S=28,D=10){
-  const word='CAVEBUILD',cells=[];let col=0;
+function makeLogo(S=28,D=10,word=/\/noejeol\//.test(location.pathname)?'DLIUBEVAC':'CAVEBUILD'){ // 뇌절모드는 로고를 거꾸로
+  const cells=[];let col=0;
   for(const ch of word){const g=LOGO_G[ch];
     for(let r=0;r<7;r++)for(let c=0;c<5;c++)if(g[r][c]==='#')cells.push([col+c,r]);
     col+=6;}
@@ -155,7 +155,8 @@ fetch(GAME_URL,{cache:'no-cache'}).then(r=>r.text()).then(t=>{
   renderVers();renderNotes();}).catch(()=>{});
 {const L=$('launcher'),show=t=>{for(const e of L.querySelectorAll('[data-tab]'))e.classList.toggle('on',e.dataset.tab===t);for(const [c,k] of [['lplay','play'],['lnews','news'],['lset','set']])L.querySelector('.'+c).classList.toggle('show',k===t);};
   let GAME='';const NJ=L.querySelector('[data-game]'),NP=L.querySelector('.lnav[data-tab=play]'); // 왼쪽 게임 목록: CAVEBUILD · CAVEBUILD 뇌절모드 (다른 링크)
-  const mark=()=>{const p=L.querySelector('.lplay').classList.contains('show');NP.classList.toggle('on',p&&!GAME);NJ.classList.toggle('on',p&&!!GAME);
+  const mark=()=>{const p=L.querySelector('.lplay').classList.contains('show');try{$('lLogo').src=makeLogo(28,10,GAME?'DLIUBEVAC':'CAVEBUILD').toDataURL();}catch(e){} // 뇌절모드는 로고가 거꾸로
+    NP.classList.toggle('on',p&&!GAME);NJ.classList.toggle('on',p&&!!GAME);
     $('lSub').textContent=GAME?'🤯 '+LT('Overkill Mode'):(LANG==='ko'?'캐고, 짓고, 살아남으세요':(LD['캐고, 짓고, 살아남으세요']||'Mine, build and survive'));};
   for(const e of L.querySelectorAll('[data-tab]'))e.onclick=()=>{if(e===NP)GAME='';show(e.dataset.tab);mark();};
   NJ.onclick=()=>{GAME='noejeol';show('play');mark();};
