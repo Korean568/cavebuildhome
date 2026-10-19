@@ -45,6 +45,12 @@ html,body{margin:0;height:100%;background:#1e1e1e;color:#fff;font-family:'Segoe 
 .lpick .llist{max-height:calc(100vh - 230px);overflow-y:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px}
 .lpick .llist button{font:inherit;text-align:left;padding:7px 10px;background:#333;color:#fff;border:1px solid #444;border-radius:3px;cursor:pointer;display:flex;flex-direction:column;line-height:1.3}
 .lpick .llist button:hover{background:#3d3d3d}.lpick .llist button.on{background:#3c8527;border-color:#4a9e31}.lpick .llist small{color:#bbb;font-size:11px}.lpick .lnone{color:#999;padding:8px}
+#launcher .luser{cursor:pointer}#launcher .luser:hover b{text-decoration:underline}
+.hmodal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:100}.hmodal.show{display:flex}
+.hbox{background:#262626;border:1px solid #444;border-radius:8px;padding:18px 20px;width:min(430px,92vw);color:#eee;font-size:14px}.hbox h3{margin:0 0 10px;font-size:18px}
+.hbox label{display:flex;align-items:center;gap:8px;margin:6px 0}.hbox label span{width:110px;color:#bbb}.hbox input{flex:1;font:inherit;padding:7px 9px;background:#1b1b1b;color:#fff;border:1px solid #555;border-radius:4px;outline:none}
+.hbox button{font:inherit;padding:7px 14px;border:0;border-radius:4px;background:#3c8527;color:#fff;cursor:pointer;margin:6px 6px 0 0}.hbox button.g{background:#444}.hbox .tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px}
+.hbox .msg{min-height:18px;font-size:13px;margin-top:6px}.hbox .tip{font-size:12px;color:#999;margin-top:4px;line-height:1.5}.hbox a{color:#ffe066}
 </style></head><body>
 <div id="launcher">
   <div class="lside">
@@ -174,4 +180,36 @@ function prepOld(){return new Promise(res=>{try{const r=indexedDB.open('cavebuil
       g.onsuccess=()=>{const sv=g.result;if(!sv){res();return;}sv.t=Date.now();try{localStorage.setItem('cb-oldplay',JSON.stringify({id:w.id,t:sv.t,v:$('lVer').value}));localStorage.removeItem('cb-hidden');}catch(e){}const t=db.transaction('saves','readwrite');t.objectStore('saves').put(sv,'main');
         t.oncomplete=()=>{try{localStorage.setItem('cubewild_save_v1',JSON.stringify(toPortable(sv)));}catch(e){try{localStorage.removeItem('cubewild_save_v1');}catch(_){}}res();};t.onerror=()=>res();};};};}catch(e){res();}});}
 loadLang();
+// ---------- 👤 로그인 (게임과 같은 서버 계정 · 같은 브라우저 열쇠) ----------
+const CB_API='https://geulbeot-rho.vercel.app/api/cavebuild',TKEY='cavebuild-token',ACCK='cavebuild-acc',NKEY='cavebuild-user',T2=(ko,en)=>LANG==='ko'?ko:en;
+let hAcc=null,hMode='in',hMsg='',hOk=false,hBusy=false,hLink=null;try{hAcc=JSON.parse(localStorage.getItem(ACCK)||'null');}catch(e){}
+const hTok=()=>{try{return localStorage.getItem(TKEY)||'';}catch(e){return '';}},hNick=()=>hAcc&&hTok()?hAcc.nick:'',hEsc=s=>String(s).replace(/[<>&"]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c]));
+async function hApi(b){let r,d={};try{r=await fetch(CB_API,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(b)});}catch(e){throw new Error(T2('서버에 연결하지 못했어요','Could not reach the server'));}try{d=await r.json();}catch(e){}if(!r.ok||d.error)throw new Error(d.error||('error '+r.status));return d;}
+function hSave(u,t){hAcc=u;try{if(t)localStorage.setItem(TKEY,t);localStorage.setItem(ACCK,JSON.stringify(u));localStorage.setItem(NKEY,u.nick);}catch(e){}hUser();}
+function hOut(){const t=hTok();if(t)hApi({action:'logout',token:t}).catch(()=>{});try{localStorage.removeItem(TKEY);localStorage.removeItem(ACCK);localStorage.removeItem(NKEY);}catch(e){}hAcc=null;hUser();}
+function hUser(){const n=hNick();$('lUser').textContent=n||T2('🔑 로그인','🔑 Log in');}
+const hm=document.createElement('div');hm.id='hLogin';hm.className='hmodal';hm.innerHTML='<div class="hbox"></div>';document.body.appendChild(hm);hm.onclick=e=>{if(e.target===hm)hm.classList.remove('show');};
+function hRender(){const b=hm.firstChild,n=hNick();
+  if(n){b.innerHTML=`<h3>👤 ${hEsc(n)}</h3><div>${T2('로그인됨 · 케이브빌드 게임과 같은 계정이에요','Logged in · same account as the game')}</div>
+    <div class="tip">🔗 ${T2('트라이브','Tribe')}: ${hAcc.tribe?T2('연동됨','linked'):`<a href="#" data-lk="tribe">${T2('연동하기','link')}</a>`} · ${T2('글벗','GeulBeot')}: ${hAcc.geulbeot?T2('연동됨','linked'):`<a href="#" data-lk="geul">${T2('연동하기','link')}</a>`}</div>
+    ${hLink?`<label><span>${hLink==='tribe'?T2('트라이브 아이디','Tribe ID'):T2('글벗 아이디','GeulBeot ID')}</span><input id="hLN"></label><label><span>${T2('비밀번호','Password')}</span><input type="password" id="hLP"></label><button id="hLGo">🔗 ${T2('연동','Link')}</button><button class="g" id="hLNo">${T2('취소','Cancel')}</button>`:''}
+    <div class="msg" style="color:${hOk?'#8ae86a':'#ff8a8a'}">${hEsc(hMsg)}</div><button class="g" id="hOut">${T2('로그아웃','Log out')}</button><button class="g" id="hX">${T2('닫기','Close')}</button>`;
+    b.querySelectorAll('[data-lk]').forEach(a=>a.onclick=e=>{e.preventDefault();hLink=a.dataset.lk;hMsg='';hRender();});
+    $('hOut').onclick=()=>{hOut();hMsg='';hRender();};$('hX').onclick=()=>hm.classList.remove('show');
+    if(hLink){$('hLNo').onclick=()=>{hLink=null;hRender();};$('hLGo').onclick=()=>hRun(async()=>{const d=await hApi({action:'link',token:hTok(),kind:hLink==='tribe'?'tribe':'geulbeot',handle:$('hLN').value,password:$('hLP').value});hSave(d.user);hLink=null;},T2('✅ 연동했어요','✅ Linked'));}
+    return;}
+  const L={in:T2('로그인','Log in'),up:T2('회원가입','Sign up'),tribe:T2('트라이브로','With Tribe'),geul:T2('글벗으로','With GeulBeot')};
+  b.innerHTML=`<h3>👤 ${T2('케이브빌드 계정','CAVEBUILD account')}</h3><div class="tabs">${Object.keys(L).map(m=>`<button class="${m===hMode?'':'g'}" data-m="${m}" style="margin:0">${L[m]}</button>`).join('')}</div>
+    <label><span>${hMode==='tribe'?T2('트라이브 아이디','Tribe ID'):hMode==='geul'?T2('글벗 아이디','GeulBeot ID'):T2('닉네임','Nickname')}</span><input id="hN" maxlength="20"></label><label><span>${T2('비밀번호','Password')}</span><input type="password" id="hP" maxlength="72"></label>
+    ${hMode==='up'?`<label><span>${T2('비밀번호 확인','Confirm')}</span><input type="password" id="hP2" maxlength="72"></label>`:''}
+    <button id="hGo">${hBusy?'⏳':L[hMode]}</button><button class="g" id="hX">${T2('닫기','Close')}</button><div class="msg" style="color:${hOk?'#8ae86a':'#ff8a8a'}">${hEsc(hMsg)}</div>
+    <div class="tip">${T2('계정은 서버에 저장돼서 어느 PC에서든 로그인돼요. 트라이브(플벗 · 볼벗 · 듣벗) · 글벗 계정으로도 들어올 수 있어요. 게임의 탈의실과 같은 계정이에요.','Accounts are stored on the server. You can also use a Tribe or GeulBeot account. Same account as the in-game wardrobe.')}</div>`;
+  b.querySelectorAll('[data-m]').forEach(x=>x.onclick=()=>{hMode=x.dataset.m;hMsg='';hRender();});$('hX').onclick=()=>hm.classList.remove('show');
+  const go=()=>{const n=$('hN').value.trim(),pw=$('hP').value;if(hMode==='up'&&pw!==$('hP2').value){hOk=false;hMsg=T2('❌ 비밀번호 확인이 달라요','❌ Passwords do not match');hRender();return;}
+    const body=hMode==='up'?{action:'signup',nick:n,password:pw}:hMode==='in'?{action:'login',nick:n,password:pw}:{action:hMode==='tribe'?'tribe_login':'geulbeot_login',handle:n,password:pw};
+    hRun(async()=>{const d=await hApi(body);hSave(d.user,d.token);},T2('✅ 로그인했어요','✅ Logged in'));};
+  $('hGo').onclick=go;for(const id of ['hN','hP','hP2'])if($(id))$(id).onkeydown=e=>{if(e.key==='Enter'&&!e.isComposing){e.preventDefault();go();}};}
+async function hRun(f,ok){if(hBusy)return;hBusy=true;hMsg='';hRender();try{await f();hOk=true;hMsg=ok;}catch(e){hOk=false;hMsg='❌ '+e.message.replace(/^❌ /,'');}hBusy=false;hRender();}
+$('lUser').parentElement.onclick=()=>{hMsg='';hLink=null;hRender();hm.classList.add('show');};
+hUser();if(hTok())hApi({action:'me',token:hTok()}).then(d=>hSave(d.user)).catch(e=>{if(/로그인이 끝났/.test(e.message))hOut();});
 </script></body></html>
