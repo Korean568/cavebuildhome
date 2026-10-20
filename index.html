@@ -55,7 +55,7 @@ html,body{margin:0;height:100%;background:#1e1e1e;color:#fff;font-family:'Segoe 
 <div id="launcher">
   <div class="lside">
     <div class="lbrand"><img id="lBrandLogo" alt="CAVEBUILD"><small>HUB</small></div>
-    <div class="lnav on" data-tab="play">🎮 CAVEBUILD</div><div class="lnav" data-game="noejeol">🤯 CAVEBUILD <span data-t="Overkill Mode">Overkill Mode</span></div>
+    <div class="lnav on" data-tab="play">🎮 CAVEBUILD</div><div class="lnav" data-game="noejeol">🤯 CAVEBUILD <span data-t="Overkill Mode">Overkill Mode</span></div><div class="lnav" data-game="speedrun">⏱ CAVEBUILD <span data-t="Speedrun">Speedrun</span></div>
     <div class="lnav" data-tab="news"><span data-t="📰 Patch Notes">📰 Patch Notes</span></div>
     <div class="lnav" data-tab="set"><span data-t="⚙ Settings">⚙ Settings</span></div>
     <div class="lfoot">© CAVEBUILD</div>
@@ -138,7 +138,7 @@ function makeLauncherIcon(S=64){ // 런처 아이콘: 어두운 둥근 판 · �
   g.fillStyle='#fff';g.beginPath();g.moveTo(43*k,40*k);g.lineTo(53*k,46*k);g.lineTo(43*k,52*k);g.closePath();g.fill();return c;}
 const LANGS=[["en","English","English"],["zh","中文（普通话）","Mandarin Chinese"],["hi","हिन्दी","Hindi"],["es","Español","Spanish"],["ar","العربية","Arabic"],["fr","Français","French"],["bn","বাংলা","Bengali"],["pt","Português","Portuguese"],["id","Bahasa Indonesia","Indonesian"],["ur","اردو","Urdu"],["ru","Русский","Russian"],["de","Deutsch","German"],["ja","日本語","Japanese"],["pcm","Naijá","Nigerian Pidgin"],["arz","مصري","Egyptian Arabic"],["mr","मराठी","Marathi"],["vi","Tiếng Việt","Vietnamese"],["te","తెలుగు","Telugu"],["sw","Kiswahili","Swahili"],["ha","Hausa","Hausa"],["tr","Türkçe","Turkish"],["pnb","پنجابی","Western Punjabi"],["fil","Filipino","Filipino / Tagalog"],["ta","தமிழ்","Tamil"],["yue","粵語","Cantonese"],["wuu","吴语（上海话）","Wu / Shanghainese"],["fa","فارسی","Persian"],["ko","한국어","Korean"],["am","አማርኛ","Amharic"],["th","ไทย","Thai"],["jv","Basa Jawa","Javanese"],["it","Italiano","Italian"],["gu","ગુજરાતી","Gujarati"],["kn","ಕನ್ನಡ","Kannada"],["apc","شامي","Levantine Arabic"],["apd","سوداني","Sudanese Arabic"],["yo","Yorùbá","Yoruba"],["bho","भोजपुरी","Bhojpuri"],["pl","Polski","Polish"],["ml","മലയാളം","Malayalam"],["uk","Українська","Ukrainian"],["or","ଓଡ଼ିଆ","Odia"],["nan","閩南語","Min Nan / Hokkien"],["my","မြန်မာ","Burmese"],["az","Azərbaycanca","Azerbaijani"],["hak","客家話","Hakka"],["hsn","湘语","Xiang"],["pa","ਪੰਜਾਬੀ","Eastern Punjabi"],["su","Basa Sunda","Sundanese"],["ro","Română","Romanian"]];
 const LANG_KEY='cavebuild-lang';let LANG='en';try{const s=localStorage.getItem(LANG_KEY);if(LANGS.some(l=>l[0]===s))LANG=s;}catch(e){}
-const KO={'Overkill Mode':'뇌절모드','PLAY':'플레이','PATCH NOTES':'패치 노트','SETTINGS':'설정','📰 Patch Notes':'📰 패치 노트','⚙ Settings':'⚙ 설정','Version':'버전','Player':'플레이어','Latest release':'최신 버전','🌐 Language':'🌐 언어','Search languages…':'언어 검색…','No matching language':'맞는 언어가 없어요'};
+const KO={'Speedrun':'스피드런 모드','Overkill Mode':'뇌절모드','PLAY':'플레이','PATCH NOTES':'패치 노트','SETTINGS':'설정','📰 Patch Notes':'📰 패치 노트','⚙ Settings':'⚙ 설정','Version':'버전','Player':'플레이어','Latest release':'최신 버전','🌐 Language':'🌐 언어','Search languages…':'언어 검색…','No matching language':'맞는 언어가 없어요'};
 let LD={};const LT=en=>LANG==='ko'?(KO[en]||en):(LD['L:'+en]||en);
 function applyText(){document.documentElement.lang=LANG;$('lSub').textContent=LANG==='ko'?'캐고, 짓고, 살아남으세요':(LD['캐고, 짓고, 살아남으세요']||'Mine, build and survive');for(const e of document.querySelectorAll('[data-t]'))e.textContent=LT(e.dataset.t);renderVers();langPicker($('lLang'));}
 let NOTES_KO='',NOTES_EN='',VERS=[];
@@ -160,12 +160,12 @@ fetch(GAME_URL,{cache:'no-cache'}).then(r=>r.text()).then(t=>{
   VERS=[...new DOMParser().parseFromString(NOTES_KO||NOTES_EN,'text/html').querySelectorAll('h4')].map(h=>(h.textContent.match(/v\d+\.\d+/)||[''])[0]).filter(Boolean);
   renderVers();renderNotes();}).catch(()=>{});
 {const L=$('launcher'),show=t=>{for(const e of L.querySelectorAll('[data-tab]'))e.classList.toggle('on',e.dataset.tab===t);for(const [c,k] of [['lplay','play'],['lnews','news'],['lset','set']])L.querySelector('.'+c).classList.toggle('show',k===t);};
-  let GAME='';const NJ=L.querySelector('[data-game]'),NP=L.querySelector('.lnav[data-tab=play]'); // 왼쪽 게임 목록: CAVEBUILD · CAVEBUILD 뇌절모드 (다른 링크)
-  const mark=()=>{const p=L.querySelector('.lplay').classList.contains('show');try{$('lLogo').src=makeLogo(28,10,GAME?'DLIUBEVAC':'CAVEBUILD').toDataURL();}catch(e){} // 뇌절모드는 로고가 거꾸로
-    NP.classList.toggle('on',p&&!GAME);NJ.classList.toggle('on',p&&!!GAME);
-    $('lSub').textContent=GAME?'🤯 '+LT('Overkill Mode'):(LANG==='ko'?'캐고, 짓고, 살아남으세요':(LD['캐고, 짓고, 살아남으세요']||'Mine, build and survive'));};
+  let GAME='';const NJS=[...L.querySelectorAll('[data-game]')],NP=L.querySelector('.lnav[data-tab=play]'); // 왼쪽 게임 목록: CAVEBUILD · CAVEBUILD 뇌절모드 (다른 링크)
+  const mark=()=>{const p=L.querySelector('.lplay').classList.contains('show');try{$('lLogo').src=makeLogo(28,10,GAME==='noejeol'?'DLIUBEVAC':'CAVEBUILD').toDataURL();}catch(e){} // 뇌절모드는 로고가 거꾸로
+    NP.classList.toggle('on',p&&!GAME);for(const e of NJS)e.classList.toggle('on',p&&e.dataset.game===GAME);
+    $('lSub').textContent=GAME==='speedrun'?'⏱ '+LT('Speedrun')+' — '+(LANG==='ko'?'로그인 · 랭킹':'login · ranking'):GAME?'🤯 '+LT('Overkill Mode'):(LANG==='ko'?'캐고, 짓고, 살아남으세요':(LD['캐고, 짓고, 살아남으세요']||'Mine, build and survive'));};
   for(const e of L.querySelectorAll('[data-tab]'))e.onclick=()=>{if(e===NP)GAME='';show(e.dataset.tab);mark();};
-  NJ.onclick=()=>{GAME='noejeol';show('play');mark();};
+  for(const e of NJS)e.onclick=()=>{GAME=e.dataset.game;show('play');mark();};
   try{const lg=makeLogo().toDataURL();$('lLogo').src=lg;$('lBrandLogo').src=lg;}catch(e){}
   try{const l=document.createElement('link');l.rel='icon';l.type='image/png';l.href=makeLauncherIcon(64).toDataURL();document.head.appendChild(l);}catch(e){}
   try{$('lUser').textContent=localStorage.getItem('cavebuild-user')||'Player';}catch(e){}
