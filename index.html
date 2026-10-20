@@ -53,7 +53,7 @@ html,body{margin:0;height:100%;background:#1e1e1e;color:#fff;font-family:'Segoe 
 .hbox .msg{min-height:18px;font-size:13px;margin-top:6px}.hbox .tip{font-size:12px;color:#999;margin-top:4px;line-height:1.5}.hbox a{color:#ffe066}
 #launcher .hrank{position:absolute;right:3%;top:10%;width:min(310px,42%);max-height:72%;overflow:auto;background:rgba(10,14,24,.72);border:2px solid #ffd040;border-radius:8px;padding:10px 12px;color:#fff;z-index:3;display:none;font-size:14px;box-shadow:0 6px 20px rgba(0,0,0,.35)}
 #launcher .hrank h4{margin:0 0 4px;color:#ffe066;font-size:16px}#launcher .hrank .hr-x{font-size:12px;color:#bbb;margin-bottom:6px}#launcher .hrank table{width:100%;border-collapse:collapse}#launcher .hrank td{padding:3px 4px;border-top:1px solid rgba(255,255,255,.08)}
-#launcher .hrank td:first-child{width:30px;text-align:right;color:#ffe066}#launcher .hrank td.t{text-align:right;font-family:monospace}#launcher .hrank tr.me{background:rgba(80,160,60,.35)}
+#launcher .hrank td:first-child{width:30px;text-align:right;color:#ffe066}#launcher .hrank td.t{text-align:right;font-family:monospace}#launcher .hrank tr.me{background:rgba(80,160,60,.35)}#launcher .hrank .hr-me{margin-top:8px;padding:6px 8px;border-radius:6px;background:rgba(255,208,64,.15);font-size:13px}
 @media (max-width:720px){#launcher .hrank{left:4%;right:4%;width:auto;top:auto;bottom:38%;max-height:40%}}</style></head><body>
 <div id="launcher">
   <div class="lside">
@@ -219,10 +219,11 @@ hUser();if(hTok())hApi({action:'me',token:hTok()}).then(d=>hSave(d.user)).catch(
 {const rk=document.createElement('div');rk.className='hrank';document.querySelector('#launcher .lhero').appendChild(rk);let at=0;
   const fmt=ms=>{ms=Math.max(0,ms|0);const h=ms/3600000|0,m=(ms/60000|0)%60,s=(ms/1000|0)%60;return `${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}.${String(ms%1000).padStart(3,'0')}`;};
   async function load(){at=Date.now();rk.innerHTML=`<h4>🏆 ${T2('스피드런 랭킹','Speedrun Ranking')}</h4><div class="hr-x">${T2('불러오는 중…','Loading…')}</div>`;
-    try{const d=await hApi({action:'sr_top'}),me=hNick();
+    try{const d=await hApi({action:'sr_top',token:hTok()||undefined}),me=hNick();
       rk.innerHTML=`<h4>🏆 ${T2('스피드런 랭킹','Speedrun Ranking')}</h4><div class="hr-x">${T2('엔딩까지 걸린 시간 · 사람마다 가장 빠른 기록','Time to the ending · best per player')}</div>`+
         (d.top.length?`<table>${d.top.slice(0,20).map((r,i)=>`<tr class="${r.nick===me?'me':''}"><td>${i<3?['🥇','🥈','🥉'][i]:i+1}</td><td>${hEsc(r.nick)}</td><td class="t">${fmt(r.ms)}</td></tr>`).join('')}</table>`
-          :`<div class="hr-x">${T2('아직 기록이 없어요. 첫 완주자가 되어 보세요!','No records yet. Be the first to finish!')}</div>`);}
+          :`<div class="hr-x">${T2('아직 기록이 없어요. 첫 완주자가 되어 보세요!','No records yet. Be the first to finish!')}</div>`)+
+        `<div class="hr-me">${d.me?(d.me.rank?`👤 ${T2('내 등수','My rank')}: <b>${d.me.rank}${T2('등',' place')}</b> · ${fmt(d.me.best)}`:`👤 ${hEsc(d.me.nick)} — ${T2('아직 완주 기록이 없어요','no finished run yet')}`):`🔑 ${T2('로그인하면 내 등수가 보여요','Log in to see your rank')}`}</div>`;}
     catch(e){rk.innerHTML+=`<div class="hr-x" style="color:#ff8a8a">❌ ${hEsc(e.message)}</div>`;}}
   const sp=document.querySelector('#launcher [data-game="speedrun"]'),lp=document.querySelector('#launcher .lplay');
   const sync=()=>{const on=!!sp&&sp.classList.contains('on')&&lp.classList.contains('show');rk.style.display=on?'block':'none';if(on&&Date.now()-at>30000)load();};
