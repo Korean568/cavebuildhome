@@ -54,18 +54,28 @@ html,body{margin:0;height:100%;background:#1e1e1e;color:#fff;font-family:'Segoe 
 #launcher .hrank{position:absolute;right:3%;top:10%;width:min(310px,42%);max-height:72%;overflow:auto;background:rgba(10,14,24,.72);border:2px solid #ffd040;border-radius:8px;padding:10px 12px;color:#fff;z-index:3;display:none;font-size:14px;box-shadow:0 6px 20px rgba(0,0,0,.35)}
 #launcher .hrank h4{margin:0 0 4px;color:#ffe066;font-size:16px}#launcher .hrank .hr-x{font-size:12px;color:#bbb;margin-bottom:6px}#launcher .hrank table{width:100%;border-collapse:collapse}#launcher .hrank td{padding:3px 4px;border-top:1px solid rgba(255,255,255,.08)}
 #launcher .hrank td:first-child{width:30px;text-align:right;color:#ffe066}#launcher .hrank td.t{text-align:right;font-family:monospace}#launcher .hrank tr.me{background:rgba(80,160,60,.35)}#launcher .hrank .hr-me{margin-top:8px;padding:6px 8px;border-radius:6px;background:rgba(255,208,64,.15);font-size:13px}
-@media (max-width:720px){#launcher .hrank{left:4%;right:4%;width:auto;top:auto;bottom:38%;max-height:40%}}</style></head><body>
+@media (max-width:720px){#launcher .hrank{left:4%;right:4%;width:auto;top:auto;bottom:38%;max-height:40%}}#launcher .lmarket{padding:16px 24px 24px}#launcher .lmarket .mk-top{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}#launcher .lmarket h3{margin:0;font-size:20px;color:#ffe066}
+#launcher .lmarket .mk-coin{font-size:15px}#launcher .lmarket .mk-coin a{color:#ffe066}#launcher .lmarket .mk-tabs{margin:10px 0 4px;display:flex;gap:6px;flex-wrap:wrap}
+#launcher .lmarket button{font:inherit;padding:6px 12px;border:0;border-radius:4px;background:#3c8527;color:#fff;cursor:pointer;margin:4px 6px 0 0}#launcher .lmarket button.g{background:#444}#launcher .lmarket .mk-tabs button{background:#333}#launcher .lmarket .mk-tabs button.on{background:#3c8527}
+#launcher .lmarket .mk-msg{min-height:20px;font-size:13px;margin:4px 0}#launcher .lmarket .mk-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px}
+#launcher .lmarket .mk-card{background:rgba(0,0,0,.35);border:1px solid #444;border-radius:8px;padding:10px 12px}#launcher .lmarket .mk-h{display:flex;justify-content:space-between;gap:8px}#launcher .lmarket .mk-p{color:#ffe066;white-space:nowrap}
+#launcher .lmarket .mk-d{font-size:13px;color:#ccc;margin:6px 0;min-height:18px}#launcher .lmarket .mk-s{font-size:12px;color:#999}#launcher .lmarket .mk-form{max-width:560px}#launcher .lmarket label{display:block;margin:8px 0;font-size:13px;color:#bbb}
+#launcher .lmarket input,#launcher .lmarket textarea{display:block;width:100%;box-sizing:border-box;margin-top:4px;font:inherit;padding:7px 9px;background:#1b1b1b;color:#fff;border:1px solid #555;border-radius:4px}
+#launcher .lmarket .tip{font-size:12px;color:#999;margin-top:8px;line-height:1.5}#launcher .lmarket h4{margin:14px 0 4px;color:#ddd}#launcher .lmarket .mk-log div{font-size:13px;padding:3px 0;border-top:1px solid rgba(255,255,255,.08)}#launcher .lmarket .mk-log small{color:#888}
+@media (max-width:720px){#launcher .lmarket{padding:10px 12px}}</style></head><body>
 <div id="launcher">
   <div class="lside">
     <div class="lbrand"><img id="lBrandLogo" alt="CAVEBUILD"><small>HUB</small></div>
     <div class="lnav on" data-tab="play">🎮 CAVEBUILD</div><div class="lnav" data-game="noejeol">🤯 CAVEBUILD <span data-t="Overkill Mode">Overkill Mode</span></div><div class="lnav" data-game="speedrun">⏱ CAVEBUILD <span data-t="Speedrun">Speedrun</span></div>
+    <div class="lnav" data-tab="market"><span data-t="🛒 Market">🛒 Market</span></div>
     <div class="lnav" data-tab="news"><span data-t="📰 Patch Notes">📰 Patch Notes</span></div>
     <div class="lnav" data-tab="set"><span data-t="⚙ Settings">⚙ Settings</span></div>
     <div class="lfoot">© CAVEBUILD</div>
   </div>
   <div class="lmain">
-    <div class="ltabs"><span class="on" data-tab="play" data-t="PLAY">PLAY</span><span data-tab="news" data-t="PATCH NOTES">PATCH NOTES</span><span data-tab="set" data-t="SETTINGS">SETTINGS</span></div>
+    <div class="ltabs"><span class="on" data-tab="play" data-t="PLAY">PLAY</span><span data-tab="market" data-t="MARKET">MARKET</span><span data-tab="news" data-t="PATCH NOTES">PATCH NOTES</span><span data-tab="set" data-t="SETTINGS">SETTINGS</span></div>
     <div class="lpane lplay show"><div class="lhero"><div class="lsun"></div><div class="lcloud c1"></div><div class="lcloud c2"></div><div class="lcloud c3"></div><img id="lLogo" alt="CAVEBUILD"><div class="lsub" id="lSub">Mine, build and survive</div><div class="lground"></div></div></div>
+    <div class="lpane lmarket"></div>
     <div class="lpane lnews"><div id="lNews" class="help upd"></div></div>
     <div class="lpane lset"><h3 data-t="🌐 Language">🌐 Language</h3><div id="lLang" class="lpick"></div></div>
     <div class="lbar"><div class="lver"><small data-t="Version">Version</small><select id="lVer"></select></div><button id="lPlay" data-t="PLAY">PLAY</button><div class="luser"><small data-t="Player">Player</small><b id="lUser">Player</b></div></div>
@@ -162,7 +172,7 @@ fetch(GAME_URL,{cache:'no-cache'}).then(r=>r.text()).then(t=>{
   const m=t.match(/const UPD_EN=`([\s\S]*?)`;/);NOTES_EN=m?m[1]:'';
   VERS=[...new DOMParser().parseFromString(NOTES_KO||NOTES_EN,'text/html').querySelectorAll('h4')].map(h=>(h.textContent.match(/v\d+\.\d+/)||[''])[0]).filter(Boolean);
   renderVers();renderNotes();}).catch(()=>{});
-{const L=$('launcher'),show=t=>{for(const e of L.querySelectorAll('[data-tab]'))e.classList.toggle('on',e.dataset.tab===t);for(const [c,k] of [['lplay','play'],['lnews','news'],['lset','set']])L.querySelector('.'+c).classList.toggle('show',k===t);};
+{const L=$('launcher'),show=t=>{for(const e of L.querySelectorAll('[data-tab]'))e.classList.toggle('on',e.dataset.tab===t);for(const [c,k] of [['lplay','play'],['lmarket','market'],['lnews','news'],['lset','set']])L.querySelector('.'+c).classList.toggle('show',k===t);};
   let GAME='';const NJS=[...L.querySelectorAll('[data-game]')],NP=L.querySelector('.lnav[data-tab=play]'); // 왼쪽 게임 목록: CAVEBUILD · CAVEBUILD 뇌절모드 (다른 링크)
   const mark=()=>{const p=L.querySelector('.lplay').classList.contains('show');try{$('lLogo').src=makeLogo(28,10,GAME==='noejeol'?'DLIUBEVAC':'CAVEBUILD').toDataURL();}catch(e){} // 뇌절모드는 로고가 거꾸로
     NP.classList.toggle('on',p&&!GAME);for(const e of NJS)e.classList.toggle('on',p&&e.dataset.game===GAME);
@@ -228,4 +238,91 @@ hUser();if(hTok())hApi({action:'me',token:hTok()}).then(d=>hSave(d.user)).catch(
   const sp=document.querySelector('#launcher [data-game="speedrun"]'),lp=document.querySelector('#launcher .lplay');
   const sync=()=>{const on=!!sp&&sp.classList.contains('on')&&lp.classList.contains('show');rk.style.display=on?'block':'none';if(on&&Date.now()-at>30000)load();};
   if(sp){new MutationObserver(sync).observe(sp,{attributes:true,attributeFilter:['class']});new MutationObserver(sync).observe(lp,{attributes:true,attributeFilter:['class']});}sync();}
+// ---------- 🛒 마켓 (모드 사고팔기 · 케이브코인 · 결제) — 서버: 글벗 창고 lib/cavebuild-market.ts ----------
+{const MK=document.querySelector('#launcher .lmarket'),MODK='cavebuild-mods',BUILTIN=[{id:'builtin-tex',name:'🎨 텍스처 바꾸기',seller:'CAVEBUILD',price:0,buys:0,builtin:1,
+    descr:T2('기본 모드 · 일시정지 메뉴에서 블록이나 아이템을 골라 내 그림으로 바꿔요','Default mod · replace block textures and item icons from the pause menu'),code:"// 🎨 텍스처 바꾸기 — CAVEBUILD 기본 모드 (허브 마켓)\n// 일시정지 → 🎨 텍스처 바꾸기 → 블록/아이템을 고르고 그림 파일을 넣으면 그 그림으로 바뀌어요. 이 PC에 저장돼요.\nconst KEY='cb-texmod';\nconst load=()=>{try{return JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch(e){return {};}};\nconst save=S=>{try{localStorage.setItem(KEY,JSON.stringify(S));return true;}catch(e){CB.toast('🎨 저장 공간이 부족해요');return false;}};\nconst apply=(k,url)=>{const im=new Image();im.onload=()=>{const id=+k.slice(1);if(k[0]==='b')CB.setBlockTexture(id,im);else CB.setItemIcon(id,im);};im.src=url;};\nconst S=load();for(const k in S)apply(k,S[k]);\nconst css=document.createElement('style');css.textContent=`#texMod{position:fixed;inset:0;z-index:40;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center}#texMod.show{display:flex}\n#texMod .box{background:#1d1f26;border:3px solid #222;width:min(760px,94vw);max-height:88vh;display:flex;flex-direction:column;padding:14px;color:#eee;font:14px sans-serif}\n#texMod h3{margin:0 0 8px}#texMod input[type=text]{width:100%;box-sizing:border-box;padding:8px;background:#111;color:#fff;border:1px solid #555;margin-bottom:8px}\n#texMod .tabs button,#texMod .act button{padding:6px 12px;margin:0 6px 8px 0;background:#3a3d48;color:#fff;border:0;cursor:pointer}#texMod .tabs button.on{background:#3c8527}\n#texMod .grid{overflow:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:6px;flex:1}\n#texMod .it{background:#2a2d36;border:2px solid transparent;padding:4px;text-align:center;cursor:pointer;font-size:10px;position:relative}#texMod .it:hover{border-color:#ffe066}#texMod .it img{width:40px;height:40px;image-rendering:pixelated;display:block;margin:0 auto 2px}\n#texMod .it.ch::after{content:'🎨';position:absolute;top:0;right:2px}#texMod .tip{font-size:12px;color:#aaa;margin-top:6px}`;\ndocument.head.appendChild(css);\nconst ui=document.createElement('div');ui.id='texMod';ui.innerHTML='<div class=\"box\"><h3>🎨 텍스처 바꾸기<\/h3><div class=\"tabs\"><button data-k=\"b\" class=\"on\">블록<\/button><button data-k=\"i\">아이템<\/button><\/div><input type=\"text\" placeholder=\"🔍 이름으로 찾기\"><div class=\"grid\"><\/div><div class=\"act\"><button data-a=\"reset\">↺ 모두 원래대로<\/button><button data-a=\"close\">닫기<\/button><\/div><div class=\"tip\">칸을 누르고 그림 파일(PNG · JPG)을 고르세요. 블록은 64×64, 아이콘은 48×48로 맞춰져요. 🎨 표시 칸을 다시 누르면 원래 그림으로 돌릴 수 있어요 (원래대로는 새로고침 뒤 적용).<\/div><\/div>';\ndocument.body.appendChild(ui);\nconst file=document.createElement('input');file.type='file';file.accept='image/*';file.style.display='none';document.body.appendChild(file);\nlet kind='b',pick=null;const q=ui.querySelector('input[type=text]'),grid=ui.querySelector('.grid');\nconst draw=()=>{const L=kind==='b'?CB.blocks():CB.items(),t=q.value.trim(),cur=load();\n  grid.innerHTML=L.filter(o=>!t||o.name.includes(t)).map(o=>`<div class=\"it${cur[kind+o.id]?' ch':''}\" data-id=\"${o.id}\"><img src=\"${o.icon}\">${String(o.name).replace(/<\/g,'&lt;')}<\/div>`).join('');};\nq.addEventListener('keydown',e=>e.stopPropagation());q.addEventListener('keyup',e=>e.stopPropagation());q.oninput=draw;\nui.querySelector('.tabs').onclick=e=>{const b=e.target.closest('button');if(!b)return;kind=b.dataset.k;ui.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('on',x===b));draw();};\ngrid.onclick=e=>{const it=e.target.closest('.it');if(!it)return;const k=kind+it.dataset.id,cur=load();\n  if(cur[k]&&confirm('이 그림을 원래대로 돌릴까요? (새로고침하면 적용돼요)')){delete cur[k];save(cur);draw();return;}pick=k;file.value='';file.click();};\nfile.onchange=()=>{const f=file.files[0];if(!f||!pick)return;const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const n=pick[0]==='b'?64:48,c=document.createElement('canvas');c.width=c.height=n;const g=c.getContext('2d');g.imageSmoothingEnabled=n<im.width;g.drawImage(im,0,0,n,n);\n    const url=c.toDataURL('image/png'),cur=load();cur[pick]=url;if(save(cur)){apply(pick,url);CB.toast('🎨 그림을 바꿨어요');setTimeout(draw,100);}};im.src=r.result;};r.readAsDataURL(f);};\nui.querySelector('.act').onclick=e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.a==='close')ui.classList.remove('show');else if(confirm('바꾼 그림을 모두 원래대로 돌릴까요? (새로고침하면 적용돼요)')){save({});draw();}};\nconst pause=document.getElementById('pause'),before=document.getElementById('btnQuit');\nif(pause&&before){const btn=document.createElement('button');btn.className='btn';btn.textContent='🎨 텍스처 바꾸기';pause.insertBefore(btn,before);btn.onclick=()=>{draw();ui.classList.add('show');};}\n"}];
+  let st={tab:'shop',mods:[],me:null,prov:['toss'],kpc:25,kpu:1400,msg:'',ok:true,edit:null,busy:false,log:null};
+  const inst=()=>{try{return JSON.parse(localStorage.getItem(MODK)||'[]')||[];}catch(e){return [];}},instSave=L=>{try{localStorage.setItem(MODK,JSON.stringify(L));return true;}catch(e){say(T2('저장 공간이 부족해요','Not enough storage'),0);return false;}};
+  const isInst=n=>inst().some(m=>m.name===n),PN={toss:'💳 토스페이먼츠',paypal:'🅿 PayPal',stripe:'💠 Stripe',lemon:'🍋 Lemon Squeezy',paddle:'🏓 Paddle'};
+  const won=c=>(c*st.kpc).toLocaleString()+'원',usd=c=>'$'+Math.max(.5,Math.round(c*st.kpc/st.kpu*100)/100).toFixed(2);
+  function say(m,ok=1){st.msg=m;st.ok=!!ok;draw();}
+  async function load(){try{const d=await hApi({action:'mk_list',token:hTok()||undefined});st.mods=d.mods||[];st.me=d.me;st.prov=d.providers||['toss'];st.kpc=d.krwPerCoin||25;st.kpu=d.krwPerUsd||1400;}catch(e){say('❌ '+e.message,0);}draw();}
+  async function run(f,okMsg){if(st.busy)return;st.busy=true;draw();try{const r=await f();if(okMsg)say(okMsg);}catch(e){say('❌ '+e.message.replace(/^❌ /,''),0);}st.busy=false;draw();}
+  function install(m,code){const L=inst(),i=L.findIndex(x=>x.name===m.name);if(i>=0)L[i].code=code;else L.push({name:m.name,code,on:true});if(instSave(L))say(T2(`✅ 「${m.name}」 설치했어요 · 게임을 새로 열면 켜져요`,`✅ Installed "${m.name}" · it loads next time you open the game`));}
+  function uninstall(m){if(!confirm(T2(`「${m.name}」 모드를 지울까요?`,`Remove "${m.name}"?`)))return;instSave(inst().filter(x=>x.name!==m.name));say(T2('🗑 지웠어요','🗑 Removed'));}
+  const getCode=m=>m.builtin?Promise.resolve(m.code):hApi({action:'mk_get',token:hTok()||undefined,id:m.id}).then(d=>d.code);
+  const back=()=>location.origin+location.pathname;
+  function loadJs(src){return new Promise((res,rej)=>{const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=()=>rej(new Error(T2('결제창을 불러오지 못했어요','Could not load the payment window')));document.head.appendChild(s);});}
+  async function pay(provider,body){ // 결제: 서버가 주문을 만들고 → 결제사 창 → 돌아오면 서버가 결제사에 확인한 뒤 코인 · 모드를 줌
+    if(!hTok()){say(T2('🔑 먼저 로그인해 주세요','🔑 Please log in first'),0);return;}
+    await run(async()=>{const d=await hApi({action:'pay_ready',token:hTok(),provider,returnUrl:back(),...body});
+      if(provider==='toss'){if(!window.TossPayments)await loadJs('https://js.tosspayments.com/v2/standard');
+        const p=TossPayments(d.clientKey).payment({customerKey:d.customerKey});
+        await p.requestPayment({method:'CARD',amount:{currency:'KRW',value:d.amount},orderId:d.orderId,orderName:d.orderName,successUrl:back()+'?pay=toss',failUrl:back()+'?pay=fail'});return;}
+      if(provider==='paypal'){if(!window.paypal)await loadJs('https://www.paypal.com/sdk/js?client-id='+encodeURIComponent(d.clientId)+'&currency=USD');
+        const box=document.createElement('div');box.className='hmodal show';box.innerHTML='<div class="hbox"><h3>🅿 PayPal</h3><div id="ppBtns"></div><button class="g" id="ppX">'+T2('닫기','Close')+'</button></div>';document.body.appendChild(box);box.querySelector('#ppX').onclick=()=>box.remove();
+        paypal.Buttons({createOrder:()=>d.paypalOrderId,onApprove:()=>{box.remove();return confirmPay({provider,orderId:d.orderId});},onError:e=>{box.remove();say('❌ PayPal: '+(e&&e.message||e),0);}}).render('#ppBtns');return;}
+      location.href=d.url;});}
+  async function confirmPay(o,tries=0){await run(async()=>{const d=await hApi({action:'pay_confirm',token:hTok(),...o});
+      if(d.wait){if(tries<12){setTimeout(()=>confirmPay(o,tries+1),3000);st.msg=T2('⏳ 결제를 확인하는 중…','⏳ Checking payment…');return;}throw new Error(T2('결제 확인이 늦어지고 있어요. 잠시 뒤 마켓을 다시 열어 보세요','Payment is still being confirmed. Reopen the market later'));}
+      await load();say(T2(`✅ 결제 완료! 내 케이브코인: ${d.coins}`,`✅ Paid! CaveCoins: ${d.coins}`));});}
+  function draw(){if(!MK)return;const me=st.me,n=hNick(),admin=n==='운영자';
+    const tabs=[['shop',T2('🛍 둘러보기','🛍 Browse')],['sell',T2('📤 팔기','📤 Sell')],['coin',T2('🪙 내 코인','🪙 My coins')]].concat(admin?[['admin',T2('🛡 운영자','🛡 Admin')]]:[]);
+    let h=`<div class="mk-top"><h3>🛒 ${T2('모드 마켓','Mod Market')}</h3><div class="mk-coin">${n?`🪙 <b>${me?me.coins.toLocaleString():'…'}</b> ${T2('케이브코인','CaveCoins')}`:`<a href="#" id="mkLogin">🔑 ${T2('로그인하면 사고팔 수 있어요','Log in to buy and sell')}</a>`}</div></div>
+      <div class="mk-tabs">${tabs.map(([k,t])=>`<button class="${st.tab===k?'on':''}" data-t="${k}">${t}</button>`).join('')}</div>
+      <div class="mk-msg" style="color:${st.ok?'#8ae86a':'#ff8a8a'}">${hEsc(st.msg)}${st.busy?' ⏳':''}</div>`;
+    if(st.tab==='shop'){const own=new Set(me?me.owned:[]);
+      h+=`<div class="mk-list">${BUILTIN.concat(st.mods).map((m,i)=>{const have=m.builtin||m.price===0||own.has(m.id)||m.mine,ins=isInst(m.name);
+        return `<div class="mk-card"><div class="mk-h"><b>${hEsc(m.name)}</b><span class="mk-p">${m.price?`🪙 ${m.price.toLocaleString()} <small>(${won(m.price)})</small>`:T2('무료','Free')}</span></div>
+          <div class="mk-d">${hEsc(m.descr||'')}</div><div class="mk-s">👤 ${hEsc(m.seller)}${m.builtin?'':` · ⬇ ${m.buys}`}</div><div class="mk-b">
+          ${have?(ins?`<button data-a="inst" data-i="${i}">↻ ${T2('다시 설치','Reinstall')}</button><button class="g" data-a="uninst" data-i="${i}">🗑 ${T2('지우기','Remove')}</button>`:`<button data-a="inst" data-i="${i}">⬇ ${T2('설치','Install')}</button>`)
+            :`<button data-a="buy" data-i="${i}">🪙 ${T2('코인으로 사기','Buy with coins')}</button>${m.price*st.kpc>=1000?st.prov.map(p=>`<button class="g" data-a="paymod" data-p="${p}" data-i="${i}">${PN[p]} ${p==='toss'?won(m.price):usd(m.price)}</button>`).join(''):''}`}
+          ${m.mine?`<button class="g" data-a="edit" data-i="${i}">✏ ${T2('고치기','Edit')}</button><button class="g" data-a="del" data-i="${i}">⛔ ${T2('내리기','Unlist')}</button>`:''}</div></div>`;}).join('')}</div>`;}
+    else if(st.tab==='sell'){const e=st.edit||{};
+      h+=n?`<div class="mk-form"><label>${T2('모드 이름','Mod name')}<input id="mkN" maxlength="30" value="${hEsc(e.name||'')}"></label>
+        <label>${T2('설명','Description')}<textarea id="mkD" maxlength="400" rows="2">${hEsc(e.descr||'')}</textarea></label>
+        <label>${T2('가격 (0~10000 케이브코인 · 0이면 무료)','Price (0–10000 CaveCoins · 0 = free)')}<input id="mkP" type="number" min="0" max="10000" value="${e.price||0}"></label><div class="mk-s" id="mkPW"></div>
+        <label>${T2('모드 파일 (.js)','Mod file (.js)')}<input id="mkF" type="file" accept=".js,text/javascript"></label>
+        <button id="mkGo">${e.id?T2('💾 고친 내용 올리기','💾 Save changes'):T2('📤 마켓에 올리기','📤 Publish')}</button>${e.id?`<button class="g" id="mkCancel">${T2('취소','Cancel')}</button>`:''}
+        <div class="tip">${T2('팔린 가격만큼 내 케이브코인이 늘어요. 모드는 게임의 CB API로 만들어요 (게임 타이틀 → 🧩 모드 → 예시 받기).','You earn the sale price in CaveCoins. Mods use the game\'s CB API (title → 🧩 Mods → example).')}</div></div>`:`<div class="tip">🔑 ${T2('로그인해야 팔 수 있어요','Log in to sell')}</div>`;}
+    else if(st.tab==='coin'){
+      h+=n?`<div class="mk-form"><div>🪙 <b>${me?me.coins.toLocaleString():0}</b> ${T2('케이브코인','CaveCoins')} · 1 ${T2('코인','coin')} = ${st.kpc}${T2('원','₩')}</div>
+        <label>${T2('충전할 코인 (40개부터)','Coins to buy (min 40)')}<input id="mkC" type="number" min="40" max="100000" value="400"></label><div class="mk-s" id="mkCW"></div>
+        <div class="mk-b">${st.prov.map(p=>`<button data-a="paycoin" data-p="${p}">${PN[p]}</button>`).join('')}</div>
+        <div class="tip">${T2('토스페이먼츠는 테스트 결제예요 (실제 돈이 나가지 않아요). PayPal · Lemon Squeezy · Stripe · Paddle 은 운영자가 키를 넣으면 나타나요. 해외 결제는 달러로 받아요.','Toss is in test mode (no real charge). PayPal, Lemon Squeezy, Stripe and Paddle appear when the operator adds keys. International payments are in USD.')}</div>
+        <h4>${T2('최근 기록','Recent history')}</h4><div class="mk-log">${st.log?st.log.map(x=>`<div>${x.delta>0?'+':''}${x.delta.toLocaleString()} · ${hEsc(x.reason)} <small>${new Date(x.at).toLocaleString()}</small></div>`).join('')||T2('아직 없어요','Nothing yet'):'…'}</div></div>`:`<div class="tip">🔑 ${T2('로그인해 주세요','Please log in')}</div>`;}
+    else if(st.tab==='admin'&&admin){
+      h+=`<div class="mk-form"><div class="tip">${T2('운영자 코인 지급 · 운영자 확인 코드가 맞아야 해요 (5번 틀리면 10분 잠김 · 모든 지급은 기록에 남아요)','Operator coin grant · requires the operator code (locked 10 min after 5 wrong tries · every grant is logged)')}</div>
+        <label>${T2('받을 닉네임 (비우면 나)','Recipient nickname (blank = me)')}<input id="mkAT" maxlength="20"></label><label>${T2('코인','Coins')}<input id="mkAC" type="number" min="1" max="1000000" value="1000"></label>
+        <label>${T2('운영자 확인 코드','Operator code')}<input id="mkAK" type="password" maxlength="40" autocomplete="off"></label><button id="mkAGo">🪙 ${T2('지급하기','Grant')}</button></div>`;}
+    MK.innerHTML=h;
+    MK.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{st.tab=b.dataset.t;st.msg='';if(st.tab==='coin'&&hTok())hApi({action:'coin_me',token:hTok()}).then(d=>{st.log=d.log;if(st.me)st.me.coins=d.coins;draw();}).catch(()=>{});draw();});
+    const lg=MK.querySelector('#mkLogin');if(lg)lg.onclick=e=>{e.preventDefault();$('lUser').parentElement.click();};
+    const all=BUILTIN.concat(st.mods);
+    MK.querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>{const m=all[+b.dataset.i],a=b.dataset.a;
+      if(a==='inst')run(async()=>install(m,await getCode(m)));
+      else if(a==='uninst')uninstall(m);
+      else if(a==='buy'){if(!hTok()){say(T2('🔑 먼저 로그인해 주세요','🔑 Please log in first'),0);return;}if(!confirm(T2(`「${m.name}」을(를) ${m.price} 케이브코인으로 살까요?`,`Buy "${m.name}" for ${m.price} CaveCoins?`)))return;
+        run(async()=>{await hApi({action:'mk_buy',token:hTok(),id:m.id});await load();install(m,await getCode(m));});}
+      else if(a==='paymod')pay(b.dataset.p,{kind:'mod',id:m.id});
+      else if(a==='paycoin'){const c=+$('mkC').value;if(!(c>=40&&c<=100000)){say(T2('40~100000 코인까지 충전할 수 있어요','40–100000 coins'),0);return;}pay(b.dataset.p,{kind:'coin',coins:Math.floor(c)});}
+      else if(a==='edit'){st.edit=m;st.tab='sell';st.msg='';draw();}
+      else if(a==='del'){if(!confirm(T2(`「${m.name}」을(를) 마켓에서 내릴까요? (산 사람도 다시 받을 수 없어요)`,`Unlist "${m.name}"?`)))return;run(async()=>{await hApi({action:'mk_del',token:hTok(),id:m.id});await load();},T2('⛔ 내렸어요','⛔ Unlisted'));}});
+    const P=MK.querySelector('#mkP');if(P){const f=()=>{$('mkPW').textContent=`= ${won(+P.value||0)} · ${usd(+P.value||0)}`;};P.oninput=f;f();}
+    const C=MK.querySelector('#mkC');if(C){const f=()=>{$('mkCW').textContent=`= ${won(+C.value||0)} · ${usd(+C.value||0)}`;};C.oninput=f;f();}
+    const go=MK.querySelector('#mkGo');if(go)go.onclick=()=>run(async()=>{const f=$('mkF').files[0],e=st.edit||{};let code=f?await f.text():'';
+      if(!code&&e.id)code=await getCode(e);if(!code)throw new Error(T2('모드 파일(.js)을 골라 주세요','Choose a .js mod file'));
+      await hApi({action:'mk_sell',token:hTok(),id:e.id||undefined,name:$('mkN').value,descr:$('mkD').value,price:Math.floor(+$('mkP').value||0),code});st.edit=null;st.tab='shop';await load();},T2('✅ 마켓에 올렸어요','✅ Published'));
+    const cc=MK.querySelector('#mkCancel');if(cc)cc.onclick=()=>{st.edit=null;draw();};
+    const ag=MK.querySelector('#mkAGo');if(ag)ag.onclick=()=>run(async()=>{const d=await hApi({action:'admin_coin',token:hTok(),to:$('mkAT').value,coins:Math.floor(+$('mkAC').value||0),code:$('mkAK').value});$('mkAK').value='';await load();say(T2(`✅ ${d.to} 님에게 지급했어요 (잔액 ${d.coins})`,`✅ Granted to ${d.to} (balance ${d.coins})`));});}
+  // 결제사에서 돌아왔을 때: 서버에 확인 요청 → 주소의 결제 정보는 지움
+  const Q=new URLSearchParams(location.search),pv=Q.get('pay');
+  if(pv){history.replaceState(null,'',back());st.tab='coin';
+    setTimeout(()=>{document.querySelector('#launcher [data-tab=market]').click();
+      if(pv==='toss')confirmPay({provider:'toss',orderId:Q.get('orderId'),paymentKey:Q.get('paymentKey'),amount:+Q.get('amount')});
+      else if(pv==='stripe'||pv==='lemon'||pv==='paddle')confirmPay({orderId:Q.get('order')});
+      else say(pv==='cancel'?T2('결제를 취소했어요','Payment cancelled'):T2('❌ 결제가 안 됐어요: ','❌ Payment failed: ')+(Q.get('message')||''),pv==='cancel');},300);}
+  document.querySelectorAll('#launcher [data-tab=market]').forEach(e=>e.addEventListener('click',()=>load()));
+  draw();}
+
 </script></body></html>
