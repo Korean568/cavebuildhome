@@ -276,7 +276,7 @@ hUser();if(hTok())hApi({action:'me',token:hTok()}).then(d=>hSave(d.user)).catch(
         return `<div class="mk-card"><div class="mk-h"><b>${hEsc(m.name)}</b><span class="mk-p">${m.price?`🪙 ${m.price.toLocaleString()} <small>(${won(m.price)})</small>`:T2('무료','Free')}</span></div>
           <div class="mk-d">${hEsc(m.descr||'')}</div><div class="mk-s">👤 ${hEsc(m.seller)}${m.builtin?'':` · ⬇ ${m.buys}`}</div><div class="mk-b">
           ${have?(ins?`<button data-a="inst" data-i="${i}">↻ ${T2('다시 설치','Reinstall')}</button><button class="g" data-a="uninst" data-i="${i}">🗑 ${T2('지우기','Remove')}</button>`:`<button data-a="inst" data-i="${i}">⬇ ${T2('설치','Install')}</button>`)
-            :`<button data-a="buy" data-i="${i}">🪙 ${T2('코인으로 사기','Buy with coins')}</button>${m.price*st.kpc>=1000?st.prov.map(p=>`<button class="g" data-a="paymod" data-p="${p}" data-i="${i}">${PN[p]} ${p==='toss'?won(m.price):usd(m.price)}</button>`).join(''):''}`}
+            :`<button data-a="buy" data-i="${i}">🪙 ${T2('코인으로 사기','Buy with coins')}</button>${m.price*st.kpc>=1000?st.prov.map(p=>`<button class="g" data-a="paymod" data-p="${p}" data-i="${i}">${PN[p]} ${p==='toss'||p==='lemon'?won(m.price):usd(m.price)}</button>`).join(''):''}`}
           ${m.mine?`<button class="g" data-a="edit" data-i="${i}">✏ ${T2('고치기','Edit')}</button><button class="g" data-a="del" data-i="${i}">⛔ ${T2('내리기','Unlist')}</button>`:''}</div></div>`;}).join('')}</div>`;}
     else if(st.tab==='sell'){const e=st.edit||{};
       h+=n?`<div class="mk-form"><label>${T2('모드 이름','Mod name')}<input id="mkN" maxlength="30" value="${hEsc(e.name||'')}"></label>
