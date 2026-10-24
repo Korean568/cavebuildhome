@@ -296,7 +296,7 @@ hUser();if(hTok())hApi({action:'me',token:hTok()}).then(d=>hSave(d.user)).catch(
     else if(st.tab==='admin'&&admin){
       h+=`<div class="mk-form"><div class="tip">${T2('운영자 코인 지급 · 운영자 확인 코드가 맞아야 해요 (5번 틀리면 10분 잠김 · 모든 지급은 기록에 남아요)','Operator coin grant · requires the operator code (locked 10 min after 5 wrong tries · every grant is logged)')}</div>
         <label>${T2('받을 닉네임 (비우면 나)','Recipient nickname (blank = me)')}<input id="mkAT" maxlength="20"></label><label>${T2('코인','Coins')}<input id="mkAC" type="number" min="1" max="1000000" value="1000"></label>
-        <label>${T2('운영자 확인 코드','Operator code')}<input id="mkAK" type="password" maxlength="40" autocomplete="off"></label><button id="mkAGo">🪙 ${T2('지급하기','Grant')}</button></div>`;}
+        <label>${T2('운영자 확인 코드','Operator code')}<input id="mkAK" type="text" inputmode="numeric" maxlength="40" autocomplete="one-time-code" name="cb-admin-code" style="-webkit-text-security:disc" spellcheck="false"></label><button id="mkAGo">🪙 ${T2('지급하기','Grant')}</button></div>`;}
     MK.innerHTML=h;
     MK.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{st.tab=b.dataset.t;st.msg='';if(st.tab==='coin'&&hTok())hApi({action:'coin_me',token:hTok()}).then(d=>{st.log=d.log;if(st.me)st.me.coins=d.coins;draw();}).catch(()=>{});draw();});
     const lg=MK.querySelector('#mkLogin');if(lg)lg.onclick=e=>{e.preventDefault();$('lUser').parentElement.click();};
@@ -317,7 +317,7 @@ hUser();if(hTok())hApi({action:'me',token:hTok()}).then(d=>hSave(d.user)).catch(
       if(!code&&e.id)code=await getCode(e);if(!code)throw new Error(T2('모드 파일(.js)을 골라 주세요','Choose a .js mod file'));
       await hApi({action:'mk_sell',token:hTok(),id:e.id||undefined,name:$('mkN').value,descr:$('mkD').value,price:Math.floor(+$('mkP').value||0),code});st.edit=null;st.tab='shop';await load();},T2('✅ 마켓에 올렸어요','✅ Published'));
     const cc=MK.querySelector('#mkCancel');if(cc)cc.onclick=()=>{st.edit=null;draw();};
-    const ag=MK.querySelector('#mkAGo');if(ag)ag.onclick=()=>run(async()=>{const d=await hApi({action:'admin_coin',token:hTok(),to:$('mkAT').value,coins:Math.floor(+$('mkAC').value||0),code:$('mkAK').value});$('mkAK').value='';await load();say(T2(`✅ ${d.to} 님에게 지급했어요 (잔액 ${d.coins})`,`✅ Granted to ${d.to} (balance ${d.coins})`));});}
+    const ag=MK.querySelector('#mkAGo');if(ag)ag.onclick=()=>run(async()=>{const d=await hApi({action:'admin_coin',token:hTok(),to:$('mkAT').value,coins:Math.floor(+$('mkAC').value||0),code:$('mkAK').value.trim()});$('mkAK').value='';await load();say(T2(`✅ ${d.to} 님에게 지급했어요 (잔액 ${d.coins})`,`✅ Granted to ${d.to} (balance ${d.coins})`));});}
   // 결제사에서 돌아왔을 때: 서버에 확인 요청 → 주소의 결제 정보는 지움
   const Q=new URLSearchParams(location.search),pv=Q.get('pay');
   if(pv){history.replaceState(null,'',back());st.tab='coin';
