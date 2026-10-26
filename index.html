@@ -68,7 +68,7 @@ html,body{margin:0;height:100%;background:#1e1e1e;color:#fff;font-family:'Segoe 
   <div class="lside">
     <div class="lbrand"><img id="lBrandLogo" alt="CAVEBUILD"><small>HUB</small></div>
     <div class="lnav" data-game="tribe3d">🕹️ TRIBE 3D GAMES</div>
-    <div class="lnav on" data-tab="play">🎮 CAVEBUILD</div><div class="lnav" data-game="noejeol">🤯 CAVEBUILD <span data-t="Overkill Mode">Overkill Mode</span></div><div class="lnav" data-game="speedrun">⏱ CAVEBUILD <span data-t="Speedrun">Speedrun</span></div>
+    <div class="lnav on" data-tab="play">🎮 CAVEBUILD</div><div class="lnav" data-game="noejeol">🤯 CAVEBUILD <span data-t="Overkill Mode">Overkill Mode</span></div><div class="lnav" data-game="speedrun">⏱ CAVEBUILD <span data-t="Speedrun">Speedrun</span></div><div class="lnav" data-game="halloween">🎃 CAVEBUILD <span data-t="Halloween">Halloween</span></div>
     <div class="lnav" data-tab="market"><span data-t="🛒 Market">🛒 Market</span></div>
     <div class="lnav" data-tab="news"><span data-t="📰 Patch Notes">📰 Patch Notes</span></div>
     <div class="lnav" data-tab="set"><span data-t="⚙ Settings">⚙ Settings</span></div>
@@ -179,7 +179,7 @@ fetch(GAME_URL,{cache:'no-cache'}).then(r=>r.text()).then(t=>{
   let GAME='';const NJS=[...L.querySelectorAll('[data-game]')],NP=L.querySelector('.lnav[data-tab=play]'); // 왼쪽 게임 목록: CAVEBUILD · CAVEBUILD 뇌절모드 (다른 링크)
   const mark=()=>{const p=L.querySelector('.lplay').classList.contains('show');try{$('lLogo').src=makeLogo(28,10,GAME==='noejeol'?'DLIUBEVAC':GAME==='tribe3d'?'TRIBE 3D':'CAVEBUILD').toDataURL();}catch(e){} // 뇌절모드는 로고가 거꾸로
     NP.classList.toggle('on',p&&!GAME);for(const e of NJS)e.classList.toggle('on',p&&e.dataset.game===GAME);
-    $('lSub').textContent=GAME==='tribe3d'?(LANG==='ko'?'⛏ 케이브코인 채굴장 · 미니게임 · 디스코드 보상':'⛏ CaveCoin Mine · minigames · Discord rewards'):GAME==='speedrun'?'⏱ '+LT('Speedrun')+' — '+(LANG==='ko'?'로그인 · 랭킹':'login · ranking'):GAME?'🤯 '+LT('Overkill Mode'):(LANG==='ko'?'캐고, 짓고, 살아남으세요':(LD['캐고, 짓고, 살아남으세요']||'Mine, build and survive'));};
+    $('lSub').textContent=GAME==='tribe3d'?(LANG==='ko'?'⛏ 케이브코인 채굴장 · 미니게임 · 디스코드 보상':'⛏ CaveCoin Mine · minigames · Discord rewards'):GAME==='halloween'?(LANG==='ko'?'🎃 할로윈 모드 — 백룸에서 7일 버티고 잭오랜턴 쓰러뜨리기':'🎃 Halloween mode — survive the Backrooms, defeat the Jack-o'-Lantern'):GAME==='speedrun'?'⏱ '+LT('Speedrun')+' — '+(LANG==='ko'?'로그인 · 랭킹':'login · ranking'):GAME?'🤯 '+LT('Overkill Mode'):(LANG==='ko'?'캐고, 짓고, 살아남으세요':(LD['캐고, 짓고, 살아남으세요']||'Mine, build and survive'));};
   for(const e of L.querySelectorAll('[data-tab]'))e.onclick=()=>{if(e===NP)GAME='';show(e.dataset.tab);mark();};
   for(const e of NJS)e.onclick=()=>{GAME=e.dataset.game;show('play');mark();};
   try{const lg=makeLogo().toDataURL();$('lLogo').src=lg;$('lBrandLogo').src=lg;}catch(e){}
