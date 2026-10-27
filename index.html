@@ -175,17 +175,22 @@ fetch(GAME_URL,{cache:'no-cache'}).then(r=>r.text()).then(t=>{
   const m=t.match(/const UPD_EN=`([\s\S]*?)`;/);NOTES_EN=m?m[1]:'';
   VERS=[...new DOMParser().parseFromString(NOTES_KO||NOTES_EN,'text/html').querySelectorAll('h4')].map(h=>(h.textContent.match(/v\d+\.\d+/)||[''])[0]).filter(Boolean);
   renderVers();renderNotes();}).catch(()=>{});
+function modFromHTML(t){const d=new DOMParser().parseFromString(t,'text/html');let js=''; // 🧩 HTML 모드 → JS: <style>은 붙이고, 본문은 화면에 얹고, <script>는 차례로 실행
+  const css=[...d.querySelectorAll('style')].map(x=>x.textContent).join('\n');if(css.trim())js+=`(()=>{const s=document.createElement('style');s.textContent=${JSON.stringify(css)};document.head.appendChild(s);})();\n`;
+  const sc=[...d.querySelectorAll('script')];for(const x of [...d.querySelectorAll('style'),...sc])x.remove();const body=d.body?d.body.innerHTML.trim():'';
+  if(body)js+=`(()=>{const w=document.createElement('div');w.className='mod-html';w.innerHTML=${JSON.stringify(body)};document.body.appendChild(w);})();\n`;
+  for(const x of sc)js+=x.src?`(()=>{const s=document.createElement('script');s.src=${JSON.stringify(x.getAttribute('src'))};document.head.appendChild(s);})();\n`:x.textContent+'\n';return js;}
 const SEASONS=[ // 🗓 달마다 바뀌는 모드 (path가 있으면 플레이 가능, 없으면 준비 중)
-  {m:[12,1],ico:'🎄',ko:'크리스마스',en:'Christmas',dk:'선물 배달',de:'Deliver presents',path:'xmas'},
-  {m:[2],ico:'🧧',ko:'설날',en:'Lunar New Year',dk:'떡국 장사',de:'Run a rice-cake soup shop',path:'seollal'},
-  {m:[3,4],ico:'🏫',ko:'개학 · 만우절',en:'New Semester · April Fools',dk:'병맛 학교 가기',de:'A very silly school',path:'school'},
-  {m:[5],ico:'👑',ko:'어린이날',en:"Children's Day",dk:'내가 왕이다',de:'I am the king',path:'kids'},
-  {m:[6],ico:'🎗',ko:'현충일',en:'Memorial Day',dk:'독립운동가 기념관 방문',de:'Visit the independence memorial',path:'memorial'},
-  {m:[7],ico:'⚖',ko:'제헌절',en:'Constitution Day',dk:'법을 만들고 재판하기',de:'Make laws and hold trials',path:'law'},
-  {m:[8],ico:'🇰🇷',ko:'광복절',en:'Liberation Day',dk:'태극기 찾기',de:'Find the Taegukgi',path:'liberation'},
-  {m:[9],ico:'🌕',ko:'추석',en:'Chuseok',dk:'윷놀이',de:'Play yutnori',path:'chuseok'},
-  {m:[10],ico:'🎃',ko:'할로윈',en:'Halloween',dk:'백룸에서 7일 버티고 잭오랜턴 쓰러뜨리기',de:'Survive the Backrooms, defeat the Jack-o’-Lantern',path:'halloween'},
-  {m:[11],ico:'🌾',ko:'농업인의 날',en:"Farmers' Day",dk:'농사 짓기',de:'Farming',path:'farm'},
+  {m:[12,1],ico:'🎄',ko:'크리스마스',en:'Christmas',dk:'선물 배달',de:'Deliver presents',path:'크리스마스'},
+  {m:[2],ico:'🧧',ko:'설날',en:'Lunar New Year',dk:'떡국 장사',de:'Run a rice-cake soup shop',path:'설날'},
+  {m:[3,4],ico:'🏫',ko:'개학 · 만우절',en:'New Semester · April Fools',dk:'병맛 학교 가기',de:'A very silly school',path:'개학만우절'},
+  {m:[5],ico:'👑',ko:'어린이날',en:"Children's Day",dk:'내가 왕이다',de:'I am the king',path:'어린이날'},
+  {m:[6],ico:'🎗',ko:'현충일',en:'Memorial Day',dk:'독립운동가 기념관 방문',de:'Visit the independence memorial',path:'현충일'},
+  {m:[7],ico:'⚖',ko:'제헌절',en:'Constitution Day',dk:'법을 만들고 재판하기',de:'Make laws and hold trials',path:'제헌절'},
+  {m:[8],ico:'🇰🇷',ko:'광복절',en:'Liberation Day',dk:'태극기 찾기',de:'Find the Taegukgi',path:'광복절'},
+  {m:[9],ico:'🌕',ko:'추석',en:'Chuseok',dk:'윷놀이',de:'Play yutnori',path:'추석'},
+  {m:[10],ico:'🎃',ko:'할로윈',en:'Halloween',dk:'백룸에서 7일 버티고 잭오랜턴 쓰러뜨리기',de:'Survive the Backrooms, defeat the Jack-o’-Lantern',path:'할로윈'},
+  {m:[11],ico:'🌾',ko:'농업인의 날',en:"Farmers' Day",dk:'농사 짓기',de:'Farming',path:'농업인의날'},
 ];
 const SEASON_M=new Date().getMonth()+1,SEASON=SEASONS.find(x=>x.m.includes(SEASON_M));
 {const L=$('launcher'),show=t=>{for(const e of L.querySelectorAll('[data-tab]'))e.classList.toggle('on',e.dataset.tab===t);for(const [c,k] of [['lplay','play'],['lmarket','market'],['lnews','news'],['lset','set']])L.querySelector('.'+c).classList.toggle('show',k===t);};
@@ -302,7 +307,7 @@ hUser();if(hTok())hApi({action:'me',token:hTok()}).then(d=>hSave(d.user)).catch(
       h+=n?`<div class="mk-form"><label>${T2('모드 이름','Mod name')}<input id="mkN" maxlength="30" value="${hEsc(e.name||'')}"></label>
         <label>${T2('설명','Description')}<textarea id="mkD" maxlength="400" rows="2">${hEsc(e.descr||'')}</textarea></label>
         <label>${T2('가격 (0~10000 케이브코인 · 0이면 무료)','Price (0–10000 CaveCoins · 0 = free)')}<input id="mkP" type="number" min="0" max="10000" value="${e.price||0}"></label><div class="mk-s" id="mkPW"></div>
-        <label>${T2('모드 파일 (.js)','Mod file (.js)')}<input id="mkF" type="file" accept=".js,text/javascript"></label>
+        <label>${T2('모드 파일 (.js · .html)','Mod file (.js · .html)')}<input id="mkF" type="file" accept=".js,.html,.htm,text/javascript,text/html"></label>
         <button id="mkGo">${e.id?T2('💾 고친 내용 올리기','💾 Save changes'):T2('📤 마켓에 올리기','📤 Publish')}</button>${e.id?`<button class="g" id="mkCancel">${T2('취소','Cancel')}</button>`:''}
         <div class="tip">${T2('팔린 가격만큼 내 케이브코인이 늘어요. 모드는 게임의 CB API로 만들어요 (게임 타이틀 → 🧩 모드 → 예시 받기).','You earn the sale price in CaveCoins. Mods use the game\'s CB API (title → 🧩 Mods → example).')}</div></div>`:`<div class="tip">🔑 ${T2('로그인해야 팔 수 있어요','Log in to sell')}</div>`;}
     else if(st.tab==='coin'){const mins=st.mins||{},c=st.pack==='c'?Math.floor(+st.custom||0):st.pack,isW=p=>p==='toss'||p==='lemon';
@@ -332,8 +337,8 @@ hUser();if(hTok())hApi({action:'me',token:hTok()}).then(d=>hSave(d.user)).catch(
     const P=MK.querySelector('#mkP');if(P){const f=()=>{$('mkPW').textContent=`= ${won(+P.value||0)} · ${usd(+P.value||0)}`;};P.oninput=f;f();}
     MK.querySelectorAll('[data-pk]').forEach(b=>b.onclick=()=>{st.pack=b.dataset.pk==='c'?'c':+b.dataset.pk;draw();});
     const C=MK.querySelector('#mkC');if(C){C.onchange=()=>{st.custom=Math.floor(+C.value||0);draw();const c2=MK.querySelector('#mkC');if(c2)c2.focus();};C.oninput=()=>{st.custom=Math.floor(+C.value||0);};}
-    const go=MK.querySelector('#mkGo');if(go)go.onclick=()=>run(async()=>{const f=$('mkF').files[0],e=st.edit||{};let code=f?await f.text():'';
-      if(!code&&e.id)code=await getCode(e);if(!code)throw new Error(T2('모드 파일(.js)을 골라 주세요','Choose a .js mod file'));
+    const go=MK.querySelector('#mkGo');if(go)go.onclick=()=>run(async()=>{const f=$('mkF').files[0],e=st.edit||{};let code=f?await f.text():'';if(f&&/\.html?$/i.test(f.name))code=modFromHTML(code); // 🧩 HTML 모드는 JS로 바꿔서 올림
+      if(!code&&e.id)code=await getCode(e);if(!code)throw new Error(T2('모드 파일(.js · .html)을 골라 주세요','Choose a .js or .html mod file'));
       await hApi({action:'mk_sell',token:hTok(),id:e.id||undefined,name:$('mkN').value,descr:$('mkD').value,price:Math.floor(+$('mkP').value||0),code});st.edit=null;st.tab='shop';await load();},T2('✅ 마켓에 올렸어요','✅ Published'));
     const cc=MK.querySelector('#mkCancel');if(cc)cc.onclick=()=>{st.edit=null;draw();};
     const ag=MK.querySelector('#mkAGo');if(ag)ag.onclick=()=>run(async()=>{const d=await hApi({action:'admin_coin',token:hTok(),to:$('mkAT').value,coins:Math.floor(+$('mkAC').value||0),code:$('mkAK').value.trim()});$('mkAK').value='';await load();say(T2(`✅ ${d.to} 님에게 지급했어요 (잔액 ${d.coins})`,`✅ Granted to ${d.to} (balance ${d.coins})`));});}
