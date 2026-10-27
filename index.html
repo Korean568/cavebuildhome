@@ -175,11 +175,23 @@ fetch(GAME_URL,{cache:'no-cache'}).then(r=>r.text()).then(t=>{
   const m=t.match(/const UPD_EN=`([\s\S]*?)`;/);NOTES_EN=m?m[1]:'';
   VERS=[...new DOMParser().parseFromString(NOTES_KO||NOTES_EN,'text/html').querySelectorAll('h4')].map(h=>(h.textContent.match(/v\d+\.\d+/)||[''])[0]).filter(Boolean);
   renderVers();renderNotes();}).catch(()=>{});
-function modFromHTML(t){const d=new DOMParser().parseFromString(t,'text/html');let js=''; // 🧩 HTML 모드 → JS: <style>은 붙이고, 본문은 화면에 얹고, <script>는 차례로 실행
-  const css=[...d.querySelectorAll('style')].map(x=>x.textContent).join('\n');if(css.trim())js+=`(()=>{const s=document.createElement('style');s.textContent=${JSON.stringify(css)};document.head.appendChild(s);})();\n`;
-  const sc=[...d.querySelectorAll('script')];for(const x of [...d.querySelectorAll('style'),...sc])x.remove();const body=d.body?d.body.innerHTML.trim():'';
-  if(body)js+=`(()=>{const w=document.createElement('div');w.className='mod-html';w.innerHTML=${JSON.stringify(body)};document.body.appendChild(w);})();\n`;
-  for(const x of sc)js+=x.src?`(()=>{const s=document.createElement('script');s.src=${JSON.stringify(x.getAttribute('src'))};document.head.appendChild(s);})();\n`:x.textContent+'\n';return js;}
+function modFromHTML(t,name){const d=new DOMParser().parseFromString(t,'text/html'); // 🧩 HTML 모드 → JS: 게임 위에 뜨는 창 · <style>은 붙이고 · <script>는 진짜 웹페이지처럼 차례로 (전역 · onload도 실행)
+  const css=[...d.querySelectorAll('style')].map(x=>x.textContent).join(' ');const scripts=[...d.querySelectorAll('script')].map(x=>x.getAttribute('src')?{src:x.getAttribute('src')}:{code:x.textContent});
+  for(const x of [...d.querySelectorAll('style,script,link[rel=stylesheet]')])x.remove();const links=[...new DOMParser().parseFromString(t,'text/html').querySelectorAll('link[rel=stylesheet]')].map(x=>x.getAttribute('href')).filter(Boolean);
+  const body=d.body?d.body.innerHTML.trim():'',title=name||(d.title||'HTML 모드');
+  return '('+(function(P){
+    for(const h of P.links){const l=document.createElement('link');l.rel='stylesheet';l.href=h;document.head.appendChild(l);}
+    if(P.css){const s=document.createElement('style');s.textContent=P.css;document.head.appendChild(s);}
+    if(P.body){const w=document.createElement('div');w.className='mod-html';w.style.cssText='position:fixed;right:12px;top:64px;z-index:45;width:min(460px,92vw);max-height:78vh;display:flex;flex-direction:column;background:#fff;color:#111;border:3px solid #ffd040;border-radius:8px;box-shadow:0 6px 24px rgba(0,0,0,.5);font-family:sans-serif';
+      const bar=document.createElement('div');bar.style.cssText='display:flex;align-items:center;gap:6px;padding:4px 8px;background:#ffd040;color:#222;font-weight:bold;font-size:13px;cursor:default';bar.innerHTML='<span style="flex:1">🧩 </span>';bar.firstChild.textContent+=P.title;
+      const mn=document.createElement('button');mn.textContent='—';const cl=document.createElement('button');cl.textContent='✕';for(const b of [mn,cl]){b.style.cssText='border:0;background:#fff8;border-radius:4px;cursor:pointer;font-weight:bold;width:24px';bar.appendChild(b);}
+      const c=document.createElement('div');c.style.cssText='overflow:auto;padding:8px';c.innerHTML=P.body;mn.onclick=()=>{c.style.display=c.style.display==='none'?'':'none';};cl.onclick=()=>w.remove();w.append(bar,c);document.body.appendChild(w);}
+    const q=[],wa=window.addEventListener,da=document.addEventListener,ol=window.onload;
+    window.addEventListener=function(e,f,o){if(e==='load'||e==='DOMContentLoaded'){q.push([window,f,e]);return;}return wa.call(this,e,f,o);};
+    document.addEventListener=function(e,f,o){if(e==='DOMContentLoaded'||e==='readystatechange'){q.push([document,f,e]);return;}return da.call(this,e,f,o);};
+    let i=0;const done=()=>{window.addEventListener=wa;document.addEventListener=da;for(const [o,f,e] of q)try{f.call(o,new Event(e));}catch(err){console.warn(err);}if(window.onload&&window.onload!==ol)try{window.onload(new Event('load'));}catch(err){console.warn(err);}};
+    const next=()=>{if(i>=P.scripts.length){done();return;}const it=P.scripts[i++],s=document.createElement('script');if(it.src){s.src=it.src;s.onload=s.onerror=next;document.head.appendChild(s);}else{s.textContent=it.code;document.head.appendChild(s);next();}};next();
+  }).toString()+')('+JSON.stringify({css,scripts,links,body,title})+');';}
 const SEASONS=[ // 🗓 달마다 바뀌는 모드 (path가 있으면 플레이 가능, 없으면 준비 중)
   {m:[12,1],ico:'🎄',ko:'크리스마스',en:'Christmas',dk:'선물 배달',de:'Deliver presents',path:'크리스마스'},
   {m:[2],ico:'🧧',ko:'설날',en:'Lunar New Year',dk:'떡국 장사',de:'Run a rice-cake soup shop',path:'설날'},
@@ -337,7 +349,7 @@ hUser();if(hTok())hApi({action:'me',token:hTok()}).then(d=>hSave(d.user)).catch(
     const P=MK.querySelector('#mkP');if(P){const f=()=>{$('mkPW').textContent=`= ${won(+P.value||0)} · ${usd(+P.value||0)}`;};P.oninput=f;f();}
     MK.querySelectorAll('[data-pk]').forEach(b=>b.onclick=()=>{st.pack=b.dataset.pk==='c'?'c':+b.dataset.pk;draw();});
     const C=MK.querySelector('#mkC');if(C){C.onchange=()=>{st.custom=Math.floor(+C.value||0);draw();const c2=MK.querySelector('#mkC');if(c2)c2.focus();};C.oninput=()=>{st.custom=Math.floor(+C.value||0);};}
-    const go=MK.querySelector('#mkGo');if(go)go.onclick=()=>run(async()=>{const f=$('mkF').files[0],e=st.edit||{};let code=f?await f.text():'';if(f&&/\.html?$/i.test(f.name))code=modFromHTML(code); // 🧩 HTML 모드는 JS로 바꿔서 올림
+    const go=MK.querySelector('#mkGo');if(go)go.onclick=()=>run(async()=>{const f=$('mkF').files[0],e=st.edit||{};let code=f?await f.text():'';if(f&&/\.html?$/i.test(f.name))code=modFromHTML(code,$('mkN').value.trim()); // 🧩 HTML 모드는 JS로 바꿔서 올림
       if(!code&&e.id)code=await getCode(e);if(!code)throw new Error(T2('모드 파일(.js · .html)을 골라 주세요','Choose a .js or .html mod file'));
       await hApi({action:'mk_sell',token:hTok(),id:e.id||undefined,name:$('mkN').value,descr:$('mkD').value,price:Math.floor(+$('mkP').value||0),code});st.edit=null;st.tab='shop';await load();},T2('✅ 마켓에 올렸어요','✅ Published'));
     const cc=MK.querySelector('#mkCancel');if(cc)cc.onclick=()=>{st.edit=null;draw();};
