@@ -68,7 +68,7 @@ html,body{margin:0;height:100%;background:#1e1e1e;color:#fff;font-family:'Segoe 
   <div class="lside">
     <div class="lbrand"><img id="lBrandLogo" alt="CAVEBUILD"><small>HUB</small></div>
     <div class="lnav" data-game="tribe3d">🕹️ TRIBE 3D GAMES</div>
-    <div class="lnav on" data-tab="play">🎮 CAVEBUILD</div><div class="lnav" data-game="noejeol">🤯 CAVEBUILD <span data-t="Overkill Mode">Overkill Mode</span></div><div class="lnav" data-game="speedrun">⏱ CAVEBUILD <span data-t="Speedrun">Speedrun</span></div><div class="lnav" data-game="season" id="lSeason">🗓 CAVEBUILD</div>
+    <div class="lnav on" data-tab="play">🎮 CAVEBUILD</div><div class="lnav" data-game="noejeol">🤯 CAVEBUILD <span data-t="Overkill Mode">Overkill Mode</span></div><div class="lnav" data-game="speedrun">⏱ CAVEBUILD <span data-t="Speedrun">Speedrun</span></div><div class="lnav" data-game="season" id="lSeason">🗓 CAVEBUILD</div><div class="lnav" data-game="season2" id="lSeason2" style="display:none"></div>
     <div class="lnav" data-tab="market"><span data-t="🛒 Market">🛒 Market</span></div>
     <div class="lnav" data-tab="news"><span data-t="📰 Patch Notes">📰 Patch Notes</span></div>
     <div class="lnav" data-tab="set"><span data-t="⚙ Settings">⚙ Settings</span></div>
@@ -195,7 +195,7 @@ function modFromHTML(t,name){const d=new DOMParser().parseFromString(t,'text/htm
 const SEASONS=[ // 🗓 달마다 바뀌는 모드 (path가 있으면 플레이 가능, 없으면 준비 중)
   {m:[12,1],ico:'🎄',ko:'크리스마스',en:'Christmas',dk:'선물 배달',de:'Deliver presents',path:'크리스마스'},
   {m:[2],ico:'🧧',ko:'설날',en:'Lunar New Year',dk:'떡국 장사',de:'Run a rice-cake soup shop',path:'설날'},
-  {m:[3,4],ico:'🏫',ko:'개학 · 만우절',en:'New Semester · April Fools',dk:'병맛 학교 가기',de:'A very silly school',path:'개학만우절'},
+  {m:[3,4],ico:'🏫',ko:'개학',en:'New Semester',dk:'학교 가기 (출석 · 수업 · 숙제 · 시험)',de:'Go to school',path:'개학'},
   {m:[5],ico:'👑',ko:'어린이날',en:"Children's Day",dk:'내가 왕이다',de:'I am the king',path:'어린이날'},
   {m:[6],ico:'🎗',ko:'현충일',en:'Memorial Day',dk:'독립운동가 기념관 방문',de:'Visit the independence memorial',path:'현충일'},
   {m:[7],ico:'⚖',ko:'제헌절',en:'Constitution Day',dk:'법을 만들고 재판하기',de:'Make laws and hold trials',path:'제헌절'},
@@ -204,13 +204,17 @@ const SEASONS=[ // 🗓 달마다 바뀌는 모드 (path가 있으면 플레이 
   {m:[10],ico:'🎃',ko:'할로윈',en:'Halloween',dk:'백룸에서 7일 버티고 잭오랜턴 쓰러뜨리기',de:'Survive the Backrooms, defeat the Jack-o’-Lantern',path:'할로윈'},
   {m:[11],ico:'🌾',ko:'농업인의 날',en:"Farmers' Day",dk:'농사 짓기',de:'Farming',path:'농업인의날'},
 ];
-const SEASON_M=new Date().getMonth()+1,SEASON=SEASONS.find(x=>x.m.includes(SEASON_M));
+const SEASONS2=[ // 🗓 이달의 모드 아래에 하나 더 (10월 한글날 · 3·4월 만우절)
+  {m:[3,4],ico:'🤡',ko:'만우절',en:'April Fools',dk:'병맛 학교 (장난 주의)',de:'A very silly school',path:'만우절'},
+  {m:[10],ico:'📜',ko:'한글날',en:'Hangul Day',dk:'자모로 훈민정음 완성 · 세종대왕 퀴즈 · 한국어만',de:'Spell 훈민정음 with Hangul letters · King Sejong quiz · Korean only',path:'한글날'},
+];
+const SEASON_M=new Date().getMonth()+1,SEASON=SEASONS.find(x=>x.m.includes(SEASON_M)),SEASON2=SEASONS2.find(x=>x.m.includes(SEASON_M));
 {const L=$('launcher'),show=t=>{for(const e of L.querySelectorAll('[data-tab]'))e.classList.toggle('on',e.dataset.tab===t);for(const [c,k] of [['lplay','play'],['lmarket','market'],['lnews','news'],['lset','set']])L.querySelector('.'+c).classList.toggle('show',k===t);};
   let GAME='';const NJS=[...L.querySelectorAll('[data-game]')],NP=L.querySelector('.lnav[data-tab=play]'); // 왼쪽 게임 목록: CAVEBUILD · CAVEBUILD 뇌절모드 (다른 링크)
   const mark=()=>{const p=L.querySelector('.lplay').classList.contains('show');try{$('lLogo').src=makeLogo(28,10,GAME==='noejeol'?'DLIUBEVAC':GAME==='tribe3d'?'TRIBE 3D':'CAVEBUILD').toDataURL();}catch(e){} // 뇌절모드는 로고가 거꾸로
     NP.classList.toggle('on',p&&!GAME);for(const e of NJS)e.classList.toggle('on',p&&e.dataset.game===GAME);
-    const S=SEASON,ko=LANG==='ko';$('lSeason').textContent=`${S.ico} CAVEBUILD ${ko?S.ko:S.en}`;$('lPlay').disabled=GAME==='season'&&!S.path;$('lPlay').style.opacity=$('lPlay').disabled?.5:''; // 🗓 이달의 모드
-    $('lSub').textContent=GAME==='tribe3d'?(LANG==='ko'?'⛏ 케이브코인 채굴장 · 미니게임 · 디스코드 보상':'⛏ CaveCoin Mine · minigames · Discord rewards'):GAME==='season'?(LANG==='ko'?`${SEASON.ico} ${SEASON_M}월 모드 · ${SEASON.ko} — ${SEASON.dk}${SEASON.path?'':' (준비 중)'}`:`${SEASON.ico} This month: ${SEASON.en} — ${SEASON.de}${SEASON.path?'':' (coming soon)'}`):GAME==='speedrun'?'⏱ '+LT('Speedrun')+' — '+(LANG==='ko'?'로그인 · 랭킹':'login · ranking'):GAME?'🤯 '+LT('Overkill Mode'):(LANG==='ko'?'캐고, 짓고, 살아남으세요':(LD['캐고, 짓고, 살아남으세요']||'Mine, build and survive'));};
+    const S=SEASON,ko=LANG==='ko';$('lSeason').textContent=`${S.ico} CAVEBUILD ${ko?S.ko:S.en}`;if(SEASON2){$('lSeason2').style.display='';$('lSeason2').textContent=`${SEASON2.ico} CAVEBUILD ${ko?SEASON2.ko:SEASON2.en}`;}$('lPlay').disabled=GAME==='season'&&!S.path;$('lPlay').style.opacity=$('lPlay').disabled?.5:''; // 🗓 이달의 모드
+    $('lSub').textContent=GAME==='tribe3d'?(LANG==='ko'?'⛏ 케이브코인 채굴장 · 미니게임 · 디스코드 보상':'⛏ CaveCoin Mine · minigames · Discord rewards'):GAME==='season2'&&SEASON2?(LANG==='ko'?`${SEASON2.ico} ${SEASON_M}월 모드 · ${SEASON2.ko} — ${SEASON2.dk}`:`${SEASON2.ico} This month: ${SEASON2.en} — ${SEASON2.de}`):GAME==='season'?(LANG==='ko'?`${SEASON.ico} ${SEASON_M}월 모드 · ${SEASON.ko} — ${SEASON.dk}${SEASON.path?'':' (준비 중)'}`:`${SEASON.ico} This month: ${SEASON.en} — ${SEASON.de}${SEASON.path?'':' (coming soon)'}`):GAME==='speedrun'?'⏱ '+LT('Speedrun')+' — '+(LANG==='ko'?'로그인 · 랭킹':'login · ranking'):GAME?'🤯 '+LT('Overkill Mode'):(LANG==='ko'?'캐고, 짓고, 살아남으세요':(LD['캐고, 짓고, 살아남으세요']||'Mine, build and survive'));};
   for(const e of L.querySelectorAll('[data-tab]'))e.onclick=()=>{if(e===NP)GAME='';show(e.dataset.tab);mark();};
   for(const e of NJS)e.onclick=()=>{GAME=e.dataset.game;show('play');mark();};
   try{const lg=makeLogo().toDataURL();$('lLogo').src=lg;$('lBrandLogo').src=lg;}catch(e){}
@@ -218,8 +222,9 @@ const SEASON_M=new Date().getMonth()+1,SEASON=SEASONS.find(x=>x.m.includes(SEASO
   try{$('lUser').textContent=localStorage.getItem('cavebuild-user')||'Player';}catch(e){}
   $('lPlay').onclick=()=>{if(GAME==='tribe3d'){location.href='https://tribe3dgames.vercel.app/';return;} // 겜벗 (TRIBE 3D GAMES)
     if(GAME==='season'){if(SEASON.path)location.href=GAME_URL+SEASON.path+'/?play=1';return;} // 🗓 이달의 모드
+    if(GAME==='season2'){if(SEASON2)location.href=GAME_URL+SEASON2.path+'/?play=1';return;}
     location.href=GAME_URL+(GAME?GAME+'/':'')+'?play=1';};
-  try{$('lSeason').textContent=`${SEASON.ico} CAVEBUILD ${typeof LANG!=='undefined'&&LANG!=='ko'?SEASON.en:SEASON.ko}`;}catch(e){$('lSeason').textContent=`${SEASON.ico} CAVEBUILD ${SEASON.ko}`;}}
+  try{const en=typeof LANG!=='undefined'&&LANG!=='ko';$('lSeason').textContent=`${SEASON.ico} CAVEBUILD ${en?SEASON.en:SEASON.ko}`;if(SEASON2){$('lSeason2').style.display='';$('lSeason2').textContent=`${SEASON2.ico} CAVEBUILD ${en?SEASON2.en:SEASON2.ko}`;}}catch(e){$('lSeason').textContent=`${SEASON.ico} CAVEBUILD ${SEASON.ko}`;}}
 // 옛 버전: 가장 최근에 한 세계를 옛 저장 칸('main')에 복사해서 그 세계로 들어가게 함 + 'cb-oldplay' 표시 → 최신 버전으로 돌아오면 옛 버전에서 한 것을 그 세계에 합치고 숨겼던 아이템도 되돌림
 function u16ToB64(a){const u=new Uint8Array(a.buffer,a.byteOffset,a.byteLength);let t='';for(let i=0;i<u.length;i+=8192)t+=String.fromCharCode.apply(null,u.subarray(i,i+8192));return btoa(t);}
 function toPortable(sv){const md={};for(const d in sv.md||{}){md[d]={};for(const k in sv.md[d]){const v=sv.md[d][k];md[d][k]=v instanceof Uint16Array?u16ToB64(v):v;}}return Object.assign({},sv,{md});}
