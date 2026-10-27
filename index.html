@@ -68,7 +68,7 @@ html,body{margin:0;height:100%;background:#1e1e1e;color:#fff;font-family:'Segoe 
   <div class="lside">
     <div class="lbrand"><img id="lBrandLogo" alt="CAVEBUILD"><small>HUB</small></div>
     <div class="lnav" data-game="tribe3d">🕹️ TRIBE 3D GAMES</div>
-    <div class="lnav on" data-tab="play">🎮 CAVEBUILD</div><div class="lnav" data-game="noejeol">🤯 CAVEBUILD <span data-t="Overkill Mode">Overkill Mode</span></div><div class="lnav" data-game="speedrun">⏱ CAVEBUILD <span data-t="Speedrun">Speedrun</span></div><div class="lnav" data-game="halloween">🎃 CAVEBUILD <span data-t="Halloween">Halloween</span></div>
+    <div class="lnav on" data-tab="play">🎮 CAVEBUILD</div><div class="lnav" data-game="noejeol">🤯 CAVEBUILD <span data-t="Overkill Mode">Overkill Mode</span></div><div class="lnav" data-game="speedrun">⏱ CAVEBUILD <span data-t="Speedrun">Speedrun</span></div><div class="lnav" data-game="season" id="lSeason">🗓 CAVEBUILD</div>
     <div class="lnav" data-tab="market"><span data-t="🛒 Market">🛒 Market</span></div>
     <div class="lnav" data-tab="news"><span data-t="📰 Patch Notes">📰 Patch Notes</span></div>
     <div class="lnav" data-tab="set"><span data-t="⚙ Settings">⚙ Settings</span></div>
@@ -175,18 +175,34 @@ fetch(GAME_URL,{cache:'no-cache'}).then(r=>r.text()).then(t=>{
   const m=t.match(/const UPD_EN=`([\s\S]*?)`;/);NOTES_EN=m?m[1]:'';
   VERS=[...new DOMParser().parseFromString(NOTES_KO||NOTES_EN,'text/html').querySelectorAll('h4')].map(h=>(h.textContent.match(/v\d+\.\d+/)||[''])[0]).filter(Boolean);
   renderVers();renderNotes();}).catch(()=>{});
+const SEASONS=[ // 🗓 달마다 바뀌는 모드 (path가 있으면 플레이 가능, 없으면 준비 중)
+  {m:[12,1],ico:'🎄',ko:'크리스마스',en:'Christmas',dk:'선물 배달',de:'Deliver presents'},
+  {m:[2],ico:'🧧',ko:'설날',en:'Lunar New Year',dk:'떡국 장사',de:'Run a rice-cake soup shop'},
+  {m:[3,4],ico:'🏫',ko:'개학 · 만우절',en:'New Semester · April Fools',dk:'학교 가기',de:'Go to school'},
+  {m:[5],ico:'👑',ko:'어린이날',en:"Children's Day",dk:'내가 왕이다',de:'I am the king'},
+  {m:[6],ico:'🎗',ko:'현충일',en:'Memorial Day',dk:'독립운동가 기념관 방문',de:'Visit the independence memorial'},
+  {m:[7],ico:'⚖',ko:'제헌절',en:'Constitution Day',dk:'법을 만들고 재판하기',de:'Make laws and hold trials'},
+  {m:[8],ico:'🇰🇷',ko:'광복절',en:'Liberation Day',dk:'태극기 찾기',de:'Find the Taegukgi'},
+  {m:[9],ico:'🌕',ko:'추석',en:'Chuseok',dk:'윷놀이',de:'Play yutnori'},
+  {m:[10],ico:'🎃',ko:'할로윈',en:'Halloween',dk:'백룸에서 7일 버티고 잭오랜턴 쓰러뜨리기',de:'Survive the Backrooms, defeat the Jack-o’-Lantern',path:'halloween'},
+  {m:[11],ico:'🌾',ko:'농업인의 날',en:"Farmers' Day",dk:'농사 짓기',de:'Farming'},
+];
+const SEASON_M=new Date().getMonth()+1,SEASON=SEASONS.find(x=>x.m.includes(SEASON_M));
 {const L=$('launcher'),show=t=>{for(const e of L.querySelectorAll('[data-tab]'))e.classList.toggle('on',e.dataset.tab===t);for(const [c,k] of [['lplay','play'],['lmarket','market'],['lnews','news'],['lset','set']])L.querySelector('.'+c).classList.toggle('show',k===t);};
   let GAME='';const NJS=[...L.querySelectorAll('[data-game]')],NP=L.querySelector('.lnav[data-tab=play]'); // 왼쪽 게임 목록: CAVEBUILD · CAVEBUILD 뇌절모드 (다른 링크)
   const mark=()=>{const p=L.querySelector('.lplay').classList.contains('show');try{$('lLogo').src=makeLogo(28,10,GAME==='noejeol'?'DLIUBEVAC':GAME==='tribe3d'?'TRIBE 3D':'CAVEBUILD').toDataURL();}catch(e){} // 뇌절모드는 로고가 거꾸로
     NP.classList.toggle('on',p&&!GAME);for(const e of NJS)e.classList.toggle('on',p&&e.dataset.game===GAME);
-    $('lSub').textContent=GAME==='tribe3d'?(LANG==='ko'?'⛏ 케이브코인 채굴장 · 미니게임 · 디스코드 보상':'⛏ CaveCoin Mine · minigames · Discord rewards'):GAME==='halloween'?(LANG==='ko'?'🎃 할로윈 모드 — 백룸에서 7일 버티고 잭오랜턴 쓰러뜨리기':'🎃 Halloween mode — survive the Backrooms, defeat the Jack-o’-Lantern'):GAME==='speedrun'?'⏱ '+LT('Speedrun')+' — '+(LANG==='ko'?'로그인 · 랭킹':'login · ranking'):GAME?'🤯 '+LT('Overkill Mode'):(LANG==='ko'?'캐고, 짓고, 살아남으세요':(LD['캐고, 짓고, 살아남으세요']||'Mine, build and survive'));};
+    const S=SEASON,ko=LANG==='ko';$('lSeason').textContent=`${S.ico} CAVEBUILD ${ko?S.ko:S.en}`;$('lPlay').disabled=GAME==='season'&&!S.path;$('lPlay').style.opacity=$('lPlay').disabled?.5:''; // 🗓 이달의 모드
+    $('lSub').textContent=GAME==='tribe3d'?(LANG==='ko'?'⛏ 케이브코인 채굴장 · 미니게임 · 디스코드 보상':'⛏ CaveCoin Mine · minigames · Discord rewards'):GAME==='season'?(LANG==='ko'?`${SEASON.ico} ${SEASON_M}월 모드 · ${SEASON.ko} — ${SEASON.dk}${SEASON.path?'':' (준비 중)'}`:`${SEASON.ico} This month: ${SEASON.en} — ${SEASON.de}${SEASON.path?'':' (coming soon)'}`):GAME==='speedrun'?'⏱ '+LT('Speedrun')+' — '+(LANG==='ko'?'로그인 · 랭킹':'login · ranking'):GAME?'🤯 '+LT('Overkill Mode'):(LANG==='ko'?'캐고, 짓고, 살아남으세요':(LD['캐고, 짓고, 살아남으세요']||'Mine, build and survive'));};
   for(const e of L.querySelectorAll('[data-tab]'))e.onclick=()=>{if(e===NP)GAME='';show(e.dataset.tab);mark();};
   for(const e of NJS)e.onclick=()=>{GAME=e.dataset.game;show('play');mark();};
   try{const lg=makeLogo().toDataURL();$('lLogo').src=lg;$('lBrandLogo').src=lg;}catch(e){}
   try{const l=document.createElement('link');l.rel='icon';l.type='image/png';l.href=makeLauncherIcon(64).toDataURL();document.head.appendChild(l);}catch(e){}
   try{$('lUser').textContent=localStorage.getItem('cavebuild-user')||'Player';}catch(e){}
   $('lPlay').onclick=()=>{if(GAME==='tribe3d'){location.href='https://tribe3dgames.vercel.app/';return;} // 겜벗 (TRIBE 3D GAMES)
-    location.href=GAME_URL+(GAME?GAME+'/':'')+'?play=1';};}
+    if(GAME==='season'){if(SEASON.path)location.href=GAME_URL+SEASON.path+'/?play=1';return;} // 🗓 이달의 모드
+    location.href=GAME_URL+(GAME?GAME+'/':'')+'?play=1';};
+  try{$('lSeason').textContent=`${SEASON.ico} CAVEBUILD ${typeof LANG!=='undefined'&&LANG!=='ko'?SEASON.en:SEASON.ko}`;}catch(e){$('lSeason').textContent=`${SEASON.ico} CAVEBUILD ${SEASON.ko}`;}}
 // 옛 버전: 가장 최근에 한 세계를 옛 저장 칸('main')에 복사해서 그 세계로 들어가게 함 + 'cb-oldplay' 표시 → 최신 버전으로 돌아오면 옛 버전에서 한 것을 그 세계에 합치고 숨겼던 아이템도 되돌림
 function u16ToB64(a){const u=new Uint8Array(a.buffer,a.byteOffset,a.byteLength);let t='';for(let i=0;i<u.length;i+=8192)t+=String.fromCharCode.apply(null,u.subarray(i,i+8192));return btoa(t);}
 function toPortable(sv){const md={};for(const d in sv.md||{}){md[d]={};for(const k in sv.md[d]){const v=sv.md[d][k];md[d][k]=v instanceof Uint16Array?u16ToB64(v):v;}}return Object.assign({},sv,{md});}
