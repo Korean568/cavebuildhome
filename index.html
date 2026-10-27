@@ -176,16 +176,16 @@ fetch(GAME_URL,{cache:'no-cache'}).then(r=>r.text()).then(t=>{
   VERS=[...new DOMParser().parseFromString(NOTES_KO||NOTES_EN,'text/html').querySelectorAll('h4')].map(h=>(h.textContent.match(/v\d+\.\d+/)||[''])[0]).filter(Boolean);
   renderVers();renderNotes();}).catch(()=>{});
 const SEASONS=[ // 🗓 달마다 바뀌는 모드 (path가 있으면 플레이 가능, 없으면 준비 중)
-  {m:[12,1],ico:'🎄',ko:'크리스마스',en:'Christmas',dk:'선물 배달',de:'Deliver presents'},
-  {m:[2],ico:'🧧',ko:'설날',en:'Lunar New Year',dk:'떡국 장사',de:'Run a rice-cake soup shop'},
-  {m:[3,4],ico:'🏫',ko:'개학 · 만우절',en:'New Semester · April Fools',dk:'학교 가기',de:'Go to school'},
-  {m:[5],ico:'👑',ko:'어린이날',en:"Children's Day",dk:'내가 왕이다',de:'I am the king'},
-  {m:[6],ico:'🎗',ko:'현충일',en:'Memorial Day',dk:'독립운동가 기념관 방문',de:'Visit the independence memorial'},
-  {m:[7],ico:'⚖',ko:'제헌절',en:'Constitution Day',dk:'법을 만들고 재판하기',de:'Make laws and hold trials'},
-  {m:[8],ico:'🇰🇷',ko:'광복절',en:'Liberation Day',dk:'태극기 찾기',de:'Find the Taegukgi'},
-  {m:[9],ico:'🌕',ko:'추석',en:'Chuseok',dk:'윷놀이',de:'Play yutnori'},
+  {m:[12,1],ico:'🎄',ko:'크리스마스',en:'Christmas',dk:'선물 배달',de:'Deliver presents',path:'xmas'},
+  {m:[2],ico:'🧧',ko:'설날',en:'Lunar New Year',dk:'떡국 장사',de:'Run a rice-cake soup shop',path:'seollal'},
+  {m:[3,4],ico:'🏫',ko:'개학 · 만우절',en:'New Semester · April Fools',dk:'병맛 학교 가기',de:'A very silly school',path:'school'},
+  {m:[5],ico:'👑',ko:'어린이날',en:"Children's Day",dk:'내가 왕이다',de:'I am the king',path:'kids'},
+  {m:[6],ico:'🎗',ko:'현충일',en:'Memorial Day',dk:'독립운동가 기념관 방문',de:'Visit the independence memorial',path:'memorial'},
+  {m:[7],ico:'⚖',ko:'제헌절',en:'Constitution Day',dk:'법을 만들고 재판하기',de:'Make laws and hold trials',path:'law'},
+  {m:[8],ico:'🇰🇷',ko:'광복절',en:'Liberation Day',dk:'태극기 찾기',de:'Find the Taegukgi',path:'liberation'},
+  {m:[9],ico:'🌕',ko:'추석',en:'Chuseok',dk:'윷놀이',de:'Play yutnori',path:'chuseok'},
   {m:[10],ico:'🎃',ko:'할로윈',en:'Halloween',dk:'백룸에서 7일 버티고 잭오랜턴 쓰러뜨리기',de:'Survive the Backrooms, defeat the Jack-o’-Lantern',path:'halloween'},
-  {m:[11],ico:'🌾',ko:'농업인의 날',en:"Farmers' Day",dk:'농사 짓기',de:'Farming'},
+  {m:[11],ico:'🌾',ko:'농업인의 날',en:"Farmers' Day",dk:'농사 짓기',de:'Farming',path:'farm'},
 ];
 const SEASON_M=new Date().getMonth()+1,SEASON=SEASONS.find(x=>x.m.includes(SEASON_M));
 {const L=$('launcher'),show=t=>{for(const e of L.querySelectorAll('[data-tab]'))e.classList.toggle('on',e.dataset.tab===t);for(const [c,k] of [['lplay','play'],['lmarket','market'],['lnews','news'],['lset','set']])L.querySelector('.'+c).classList.toggle('show',k===t);};
