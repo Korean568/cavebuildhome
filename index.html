@@ -287,7 +287,7 @@ hUser();if(hTok())hApi({action:'me',token:hTok()}).then(d=>hSave(d.user)).catch(
       if(d.wait){if(tries<12){setTimeout(()=>confirmPay(o,tries+1),3000);st.msg=T2('⏳ 결제를 확인하는 중…','⏳ Checking payment…');return;}throw new Error(T2('결제 확인이 늦어지고 있어요. 잠시 뒤 마켓을 다시 열어 보세요','Payment is still being confirmed. Reopen the market later'));}
       await load();say(T2(`✅ 결제 완료! 내 케이브코인: ${d.coins}`,`✅ Paid! CaveCoins: ${d.coins}`));});}
   function draw(){if(!MK)return;const me=st.me,n=hNick(),admin=!!(me&&me.admin);
-    const tabs=[['shop',T2('🛍 둘러보기','🛍 Browse')],['sell',T2('📤 팔기','📤 Sell')],['coin',T2('🪙 내 코인','🪙 My coins')]].concat(admin?[['admin',T2('🛡 운영자','🛡 Admin')]]:[]);
+    const tabs=[['shop',T2('🛍 둘러보기','🛍 Browse')],['sell',T2('📤 팔기','📤 Sell')]].concat(admin?[['admin',T2('🛡 운영자','🛡 Admin')]]:[]);
     let h=`<div class="mk-top"><h3>🛒 ${T2('모드 마켓','Mod Market')}</h3><div class="mk-coin">${n?`🪙 <b>${me?me.coins.toLocaleString():'…'}</b> ${T2('케이브코인','CaveCoins')}`:`<a href="#" id="mkLogin">🔑 ${T2('로그인하면 사고팔 수 있어요','Log in to buy and sell')}</a>`}</div></div>
       <div class="mk-tabs">${tabs.map(([k,t])=>`<button class="${st.tab===k?'on':''}" data-t="${k}">${t}</button>`).join('')}</div>
       <div class="mk-msg" style="color:${st.ok?'#8ae86a':'#ff8a8a'}">${hEsc(st.msg)}${st.busy?' ⏳':''}</div>`;
@@ -339,7 +339,7 @@ hUser();if(hTok())hApi({action:'me',token:hTok()}).then(d=>hSave(d.user)).catch(
     const ag=MK.querySelector('#mkAGo');if(ag)ag.onclick=()=>run(async()=>{const d=await hApi({action:'admin_coin',token:hTok(),to:$('mkAT').value,coins:Math.floor(+$('mkAC').value||0),code:$('mkAK').value.trim()});$('mkAK').value='';await load();say(T2(`✅ ${d.to} 님에게 지급했어요 (잔액 ${d.coins})`,`✅ Granted to ${d.to} (balance ${d.coins})`));});}
   // 결제사에서 돌아왔을 때: 서버에 확인 요청 → 주소의 결제 정보는 지움
   const Q=new URLSearchParams(location.search),pv=Q.get('pay');
-  if(pv){history.replaceState(null,'',back());st.tab='coin';
+  if(pv){history.replaceState(null,'',back());st.tab='shop';
     setTimeout(()=>{document.querySelector('#launcher [data-tab=market]').click();
       if(pv==='toss')confirmPay({provider:'toss',orderId:Q.get('orderId'),paymentKey:Q.get('paymentKey'),amount:+Q.get('amount')});
       else if(pv==='stripe'||pv==='lemon'||pv==='paddle')confirmPay({orderId:Q.get('order')});
