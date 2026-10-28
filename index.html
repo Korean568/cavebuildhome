@@ -325,6 +325,7 @@ hUser();if(hTok())hApi({action:'me',token:hTok()}).then(d=>hSave(d.user)).catch(
         <label>${T2('설명','Description')}<textarea id="mkD" maxlength="400" rows="2">${hEsc(e.descr||'')}</textarea></label>
         <label>${T2('가격 (0~10000 케이브코인 · 0이면 무료)','Price (0–10000 CaveCoins · 0 = free)')}<input id="mkP" type="number" min="0" max="10000" value="${e.price||0}"></label><div class="mk-s" id="mkPW"></div>
         <label>${T2('모드 파일 (.js · .html)','Mod file (.js · .html)')}<input id="mkF" type="file" accept=".js,.html,.htm,text/javascript,text/html"></label>
+        <label>${T2('또는 모드 주소 (https://… · 늘 최신)','or mod URL (always latest)')}<input id="mkU" type="url" placeholder="https://"></label>
         <button id="mkGo">${e.id?T2('💾 고친 내용 올리기','💾 Save changes'):T2('📤 마켓에 올리기','📤 Publish')}</button>${e.id?`<button class="g" id="mkCancel">${T2('취소','Cancel')}</button>`:''}
         <div class="tip">${T2('팔린 가격만큼 내 케이브코인이 늘어요. 모드는 게임의 CB API로 만들어요 (게임 타이틀 → 🧩 모드 → 예시 받기).','You earn the sale price in CaveCoins. Mods use the game\'s CB API (title → 🧩 Mods → example).')}</div></div>`:`<div class="tip">🔑 ${T2('로그인해야 팔 수 있어요','Log in to sell')}</div>`;}
     else if(st.tab==='coin'){const mins=st.mins||{},c=st.pack==='c'?Math.floor(+st.custom||0):st.pack,isW=p=>p==='toss'||p==='lemon';
@@ -354,7 +355,7 @@ hUser();if(hTok())hApi({action:'me',token:hTok()}).then(d=>hSave(d.user)).catch(
     const P=MK.querySelector('#mkP');if(P){const f=()=>{$('mkPW').textContent=`= ${won(+P.value||0)} · ${usd(+P.value||0)}`;};P.oninput=f;f();}
     MK.querySelectorAll('[data-pk]').forEach(b=>b.onclick=()=>{st.pack=b.dataset.pk==='c'?'c':+b.dataset.pk;draw();});
     const C=MK.querySelector('#mkC');if(C){C.onchange=()=>{st.custom=Math.floor(+C.value||0);draw();const c2=MK.querySelector('#mkC');if(c2)c2.focus();};C.oninput=()=>{st.custom=Math.floor(+C.value||0);};}
-    const go=MK.querySelector('#mkGo');if(go)go.onclick=()=>{const f=$('mkF').files[0],nm=$('mkN').value,ds=$('mkD').value,pr=Math.floor(+$('mkP').value||0);run(async()=>{const e=st.edit||{};let code=f?await f.text():'';if(f&&/\.html?$/i.test(f.name))code=modFromHTML(code,nm.trim()); // 🧩 HTML 모드는 JS로 바꿔서 올림
+    const go=MK.querySelector('#mkGo');if(go)go.onclick=()=>{const f=$('mkF').files[0],nm=$('mkN').value,ds=$('mkD').value,pr=Math.floor(+$('mkP').value||0),mu=($('mkU')||{}).value||'';run(async()=>{const e=st.edit||{};let code=f?await f.text():'';if(!f&&/^https?:\/\/\S+$/.test(mu.trim()))code='CB.loadUrl('+JSON.stringify(mu.trim())+');'; // 🔗 주소 모드: 사는 사람 게임이 그 주소에서 늘 최신으로 불러옴if(f&&/\.html?$/i.test(f.name))code=modFromHTML(code,nm.trim()); // 🧩 HTML 모드는 JS로 바꿔서 올림
       if(!code&&e.id)code=await getCode(e);if(!code)throw new Error(T2('모드 파일(.js · .html)을 골라 주세요','Choose a .js or .html mod file'));
       {const mb=new Blob([JSON.stringify(code)]).size/1e6;if(mb>4.2)throw new Error(T2(`모드 파일이 너무 커요 (${mb.toFixed(1)}MB · 4MB까지). 그림은 파일 안에 넣지 말고 인터넷 주소로 불러와 주세요`,`Mod file too big (${mb.toFixed(1)}MB, max 4MB)`));} // 올리기 전에 크기 확인 (서버가 받는 한도 약 4.5MB)
       await hApi({action:'mk_sell',token:hTok(),id:e.id||undefined,name:nm,descr:ds,price:pr,code});st.edit=null;st.tab='shop';await load();},T2('✅ 마켓에 올렸어요','✅ Published'));};
