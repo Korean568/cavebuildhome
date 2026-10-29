@@ -75,11 +75,17 @@ html,body{margin:0;height:100%;background:#1e1e1e;color:#fff;font-family:'Segoe 
     <div class="lfoot">© CAVEBUILD</div>
   </div>
   <div class="lmain">
-    <div class="ltabs"><span class="on" data-tab="play" data-t="PLAY">PLAY</span><span data-tab="market" data-t="MARKET">MARKET</span><span data-tab="news" data-t="PATCH NOTES">PATCH NOTES</span><span data-tab="set" data-t="SETTINGS">SETTINGS</span></div>
+    <div class="ltabs"><span class="on" data-tab="play" data-t="PLAY">PLAY</span><span data-tab="market" data-t="MARKET">MARKET</span><span data-tab="news" data-t="PATCH NOTES">PATCH NOTES</span><span data-tab="set" data-t="SETTINGS">SETTINGS</span><span data-tab="adm" id="tAdm" style="display:none;color:#ffb44a">🛡 어드민</span></div>
     <div class="lpane lplay show"><div class="lhero"><div class="lsun"></div><div class="lcloud c1"></div><div class="lcloud c2"></div><div class="lcloud c3"></div><img id="lLogo" alt="CAVEBUILD"><div class="lsub" id="lSub">Mine, build and survive</div><div class="lground"></div></div></div>
     <div class="lpane lmarket"></div>
     <div class="lpane lnews"><div id="lNews" class="help upd"></div></div>
     <div class="lpane lset"><h3 data-t="🌐 Language">🌐 Language</h3><div id="lLang" class="lpick"></div></div>
+    <div class="lpane ladm"><h3>🛡 어드민 지급</h3>
+      <div style="font-size:13px;color:#aaa;margin:-4px 0 10px">어드민은 게임에서 모든 명령어 · 서버 설정 · Mods를 쓸 수 있고 밴당하지 않아요. 운영자만 주고 뺄 수 있어요.</div>
+      <div style="display:flex;gap:8px;margin-bottom:10px"><input id="admQ" type="text" maxlength="30" placeholder="닉네임 · @글벗 아이디 · @트라이브 아이디" style="flex:1;padding:8px 10px;font-size:15px;background:#1b1b1b;color:#fff;border:1px solid #555;border-radius:4px"><button id="admGo" style="padding:8px 16px;font-weight:bold;cursor:pointer">🔍 찾기</button></div>
+      <div id="admMsg" style="font-size:13px;margin-bottom:8px;color:#ffe066"></div>
+      <div id="admRes"></div>
+      <h3 style="margin-top:18px">지금 어드민</h3><div id="admNow"></div></div>
     <div class="lbar"><div class="lver"><small data-t="Version">Version</small><select id="lVer"></select></div><button id="lPlay" data-t="PLAY">PLAY</button><div class="luser"><small data-t="Player">Player</small><b id="lUser">Player</b></div></div>
   </div>
 </div>
@@ -209,7 +215,7 @@ const SEASONS2=[ // 🗓 이달의 모드 아래에 하나 더 (10월 한글날 
   {m:[10],ico:'📜',ko:'한글날',en:'Hangul Day',dk:'자모로 훈민정음 완성 · 세종대왕 퀴즈 · 한국어만',de:'Spell 훈민정음 with Hangul letters · King Sejong quiz · Korean only',path:'한글날'},
 ];
 const SEASON_M=new Date().getMonth()+1,SEASON=SEASONS.find(x=>x.m.includes(SEASON_M)),SEASON2=SEASONS2.find(x=>x.m.includes(SEASON_M));
-{const L=$('launcher'),show=t=>{for(const e of L.querySelectorAll('[data-tab]'))e.classList.toggle('on',e.dataset.tab===t);for(const [c,k] of [['lplay','play'],['lmarket','market'],['lnews','news'],['lset','set']])L.querySelector('.'+c).classList.toggle('show',k===t);};
+{const L=$('launcher'),show=t=>{for(const e of L.querySelectorAll('[data-tab]'))e.classList.toggle('on',e.dataset.tab===t);for(const [c,k] of [['lplay','play'],['lmarket','market'],['lnews','news'],['lset','set'],['ladm','adm']])L.querySelector('.'+c).classList.toggle('show',k===t);};
   let GAME='';const NJS=[...L.querySelectorAll('[data-game]')],NP=L.querySelector('.lnav[data-tab=play]'); // 왼쪽 게임 목록: CAVEBUILD · CAVEBUILD 뇌절모드 (다른 링크)
   const mark=()=>{const p=L.querySelector('.lplay').classList.contains('show');try{$('lLogo').src=makeLogo(28,10,GAME==='noejeol'?'DLIUBEVAC':GAME==='tribe3d'?'TRIBE 3D':'CAVEBUILD').toDataURL();}catch(e){} // 뇌절모드는 로고가 거꾸로
     NP.classList.toggle('on',p&&!GAME);for(const e of NJS)e.classList.toggle('on',p&&e.dataset.game===GAME);
@@ -242,7 +248,16 @@ const hTok=()=>{try{return localStorage.getItem(TKEY)||'';}catch(e){return '';}}
 async function hApi(b){let r,d={};try{r=await fetch(CB_API,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(b)});}catch(e){throw new Error(T2('서버에 연결하지 못했어요','Could not reach the server'));}try{d=await r.json();}catch(e){}if(!r.ok||d.error)throw new Error(d.error||('error '+r.status));return d;}
 function hSave(u,t){hAcc=u;try{if(t)localStorage.setItem(TKEY,t);localStorage.setItem(ACCK,JSON.stringify(u));localStorage.setItem(NKEY,u.nick);}catch(e){}hUser();}
 function hOut(){const t=hTok();if(t)hApi({action:'logout',token:t}).catch(()=>{});try{localStorage.removeItem(TKEY);localStorage.removeItem(ACCK);localStorage.removeItem(NKEY);}catch(e){}hAcc=null;hUser();}
-function hUser(){const n=hNick();$('lUser').textContent=n||T2('🔑 로그인','🔑 Log in');}
+function hUser(){const n=hNick();$('lUser').textContent=n||T2('🔑 로그인','🔑 Log in');$('tAdm').style.display=n==='운영자'?'':'none';} // 🛡 어드민 탭은 운영자에게만
+// 🛡 어드민 지급: 계정을 찾아서 어드민을 주고 뺌 (서버도 운영자인지 다시 확인함)
+function admRow(u){const ids=[u.geul?'글벗 @'+hEsc(u.geul):'',u.tribe?'트라이브 @'+hEsc(u.tribe):''].filter(Boolean).join(' · ');
+  return `<div style="display:flex;align-items:center;gap:10px;padding:8px 10px;margin-bottom:6px;background:#1e1e22;border-radius:6px"><div style="flex:1"><b>${hEsc(u.nick)}</b>${u.admin?' <span style="color:#ffb44a">🛡 어드민</span>':''}<div style="font-size:12px;color:#999">${ids||'연동 없음'}</div></div>${u.owner?'<span style="font-size:12px;color:#999">운영자</span>':`<button data-adm="${hEsc(u.id)}" data-on="${u.admin?0:1}" style="padding:6px 12px;cursor:pointer;font-weight:bold;${u.admin?'':'background:#3a8a3a;color:#fff;border:0'}">${u.admin?'어드민 빼기':'🛡 어드민 주기'}</button>`}</div>`;}
+async function admLoad(q){const M=$('admMsg');M.textContent='';try{if(q!=null){const d=await hApi({action:'adm_search',token:hTok(),q});$('admRes').innerHTML=d.users.length?d.users.map(admRow).join(''):'<div style="color:#999">찾는 계정이 없어요</div>';}
+  const n=await hApi({action:'adm_list',token:hTok()});$('admNow').innerHTML=n.users.length?n.users.map(admRow).join(''):'<div style="color:#999">운영자 말고는 아직 없어요</div>';}catch(e){M.textContent='⚠ '+e.message;}}
+$('admGo').onclick=()=>{const q=$('admQ').value.trim();if(q)admLoad(q);};$('admQ').onkeydown=e=>{if(e.key==='Enter')$('admGo').click();};
+$('tAdm').addEventListener('click',()=>admLoad(null));
+document.querySelector('.ladm').addEventListener('click',async e=>{const b=e.target.closest('[data-adm]');if(!b)return;b.disabled=true;
+  try{const d=await hApi({action:'adm_set',token:hTok(),id:b.dataset.adm,on:b.dataset.on==='1'});$('admMsg').textContent=d.admin?`🛡 ${d.nick} 님에게 어드민을 줬어요 (게임을 새로 켜면 적용)`:`${d.nick} 님의 어드민을 뺐어요`;const q=$('admQ').value.trim();await admLoad(q||null);$('admMsg').textContent=d.admin?`🛡 ${d.nick} 님에게 어드민을 줬어요 (게임을 새로 켜면 적용)`:`${d.nick} 님의 어드민을 뺐어요`;}catch(err){$('admMsg').textContent='⚠ '+err.message;b.disabled=false;}});
 const hm=document.createElement('div');hm.id='hLogin';hm.className='hmodal';hm.innerHTML='<div class="hbox"></div>';document.body.appendChild(hm);hm.onclick=e=>{if(e.target===hm)hm.classList.remove('show');};
 function hRender(){const b=hm.firstChild,n=hNick();
   if(n){b.innerHTML=`<h3>👤 ${hEsc(n)}</h3><div>${T2('로그인됨 · 케이브빌드 게임과 같은 계정이에요','Logged in · same account as the game')}</div>
